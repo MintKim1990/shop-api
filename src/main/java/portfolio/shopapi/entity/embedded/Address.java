@@ -1,4 +1,4 @@
-package portfolio.shopapi.domain.embedded;
+package portfolio.shopapi.entity.embedded;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
