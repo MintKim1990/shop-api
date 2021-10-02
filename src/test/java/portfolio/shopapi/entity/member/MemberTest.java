@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import portfolio.shopapi.request.member.MemberDto;
+import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.service.MemberService;
 
 import javax.persistence.EntityManager;
@@ -26,7 +26,7 @@ class MemberTest {
     @Test
     public void createMemberTest() {
 
-        MemberDto memberDto = new MemberDto(
+        MemberSaveRequest memberSaveRequest = new MemberSaveRequest(
                 "테스트",
                 "서울",
                 "강서구",
@@ -35,7 +35,7 @@ class MemberTest {
         );
 
         // Spring Jpa Data 기본 메서드 (SimpleJpaRepository.save)
-        Long saveId = memberService.save(memberDto);
+        Long saveId = memberService.save(memberSaveRequest);
 
         // QueryDsl Custom 클래스 메서드 (MemberRepositoryImpl.findMemberById)
         Member findMember = memberService.findMemberById(saveId);

@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import portfolio.shopapi.request.member.MemberDto;
+import portfolio.shopapi.exception.ParameterException;
+import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.service.MemberService;
 
 @RestController
@@ -18,17 +19,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/save")
-    public Object save(@RequestBody @Validated MemberDto memberDto, BindingResult bindingResult) throws Exception {
+    public Object save(@RequestBody @Validated MemberSaveRequest memberSaveRequest, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException(
-                    bindingResult.getAllErrors()
-                            .stream()
-                            .findFirst()
-                            .get()
-                            .getDefaultMessage()
-            );
+            throw new ParameterException(bindingResult);
         } else {
-            return memberService.save(memberDto);
+            return memberService.save(memberSaveRequest);
         }
 
     }

@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import portfolio.shopapi.request.member.MemberDto;
+import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.entity.embedded.Address;
 
 import javax.persistence.*;
@@ -34,15 +34,15 @@ public class Member {
         this.phone = phone;
     }
 
-    public static Member CreateMember(MemberDto memberDto) {
+    public static Member CreateMember(MemberSaveRequest memberSaveRequest) {
         return Member.builder()
-                .name(memberDto.getName())
+                .name(memberSaveRequest.getName())
                 .address(new Address(
-                        memberDto.getCity(),
-                        memberDto.getStreet(),
-                        memberDto.getZipcode()
+                        memberSaveRequest.getCity(),
+                        memberSaveRequest.getStreet(),
+                        memberSaveRequest.getZipcode()
                 ))
-                .phone(memberDto.getPhone())
+                .phone(memberSaveRequest.getPhone())
                 .build();
     }
 
