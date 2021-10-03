@@ -4,10 +4,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import portfolio.shopapi.entity.order.Order;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.entity.embedded.Address;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,8 +29,11 @@ public class Member {
     @Column(length = 11)
     private String phone;
 
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders = new ArrayList<>();
+
     @Builder
-    public Member(Long id, String name, Address address, String phone) {
+    private Member(Long id, String name, Address address, String phone) {
         this.id = id;
         this.name = name;
         this.address = address;
