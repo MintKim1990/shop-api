@@ -30,14 +30,15 @@ class MemberTest {
     @Test
     public void createMemberTest() {
 
-        Member member = Member.builder()
-                .name("테스트")
-                .address(
-                        new Address("서울", "강서구", "12")
+        Member member = Member.CreateMember(
+                new MemberSaveRequest(
+                        "테스트",
+                        "서울",
+                        "강서구",
+                        "123",
+                        "01071656293"
                 )
-                .phone("01071656293")
-                .build();
-
+        );
 
         // Spring Jpa Data 기본 메서드 (SimpleJpaRepository.save)
         Member saveMember = memberRepository.save(member);

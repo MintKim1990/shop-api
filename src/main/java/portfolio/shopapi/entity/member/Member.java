@@ -32,24 +32,22 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
-    @Builder
-    private Member(Long id, String name, Address address, String phone) {
-        this.id = id;
+    private Member(String name, Address address, String phone) {
         this.name = name;
         this.address = address;
         this.phone = phone;
     }
 
     public static Member CreateMember(MemberSaveRequest memberSaveRequest) {
-        return Member.builder()
-                .name(memberSaveRequest.getName())
-                .address(new Address(
+        return new Member(
+                memberSaveRequest.getName(),
+                new Address(
                         memberSaveRequest.getCity(),
                         memberSaveRequest.getStreet(),
                         memberSaveRequest.getZipcode()
-                ))
-                .phone(memberSaveRequest.getPhone())
-                .build();
+                ),
+                memberSaveRequest.getPhone()
+        );
     }
 
 }

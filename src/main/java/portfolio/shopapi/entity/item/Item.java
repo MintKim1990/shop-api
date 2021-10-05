@@ -1,6 +1,8 @@
 package portfolio.shopapi.entity.item;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import portfolio.shopapi.entity.Category.Category;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
@@ -11,6 +13,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Item {
 
     @Id @GeneratedValue
