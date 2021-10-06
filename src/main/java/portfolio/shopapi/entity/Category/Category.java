@@ -3,6 +3,7 @@ package portfolio.shopapi.entity.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.*;
@@ -14,9 +15,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
-    @Id @GeneratedValue
+    @Id
     @Column(name = "category_id")
-    private Long id;
+    private String code;
 
     private String name;
 
@@ -30,9 +31,17 @@ public class Category {
     @OneToMany(mappedBy = "category_parent")
     private List<Category> category_child = new ArrayList<>();
 
-    public void addCategory(Category category) {
-        this.category_child.add(category);
-        category_parent = this;
+    public Category(String code, String name) {
+        this.code = code;
+        this.name = name;
     }
 
+    public void addCategory(Category category) {
+        this.category_child.add(category);
+        category.setCategory_parent(this);
+    }
+
+    private void setCategory_parent(Category category_parent) {
+        this.category_parent = category_parent;
+    }
 }
