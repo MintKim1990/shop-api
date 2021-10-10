@@ -3,7 +3,6 @@ package portfolio.shopapi.entity.item;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import portfolio.shopapi.entity.Category.Category;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.*;
@@ -26,6 +25,12 @@ public abstract class Item {
 
     @OneToMany(mappedBy = "item")
     private List<ItemCategory> itemCategories = new ArrayList<>();
+
+    public Item(String name, int price, int stockQuantity) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
 
     /**
      * 재고증가

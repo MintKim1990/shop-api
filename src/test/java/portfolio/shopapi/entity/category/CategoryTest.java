@@ -1,16 +1,15 @@
-package portfolio.shopapi.entity.Category;
+package portfolio.shopapi.entity.category;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import portfolio.shopapi.dto.condition.CategoryCondition;
 import portfolio.shopapi.repository.category.CategoryRepository;
+import portfolio.shopapi.response.category.CategoryListResponse;
 
-import javax.persistence.EntityManager;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CategoryTest {
@@ -18,25 +17,25 @@ class CategoryTest {
     @Autowired
     CategoryRepository categoryRepository;
 
-    @Autowired
-    EntityManager entityManager;
-
+    /**
+     * 카테고리 부모 자식관계 등록
+     */
     @Test
     @Transactional
     @Rollback(value = false)
     public void relationTest() {
 
         Category category_Book = new Category("Book", "도서");
-        Category save = categoryRepository.save(category_Book);
+        Category book = categoryRepository.save(category_Book);
 
-        Category category_Autobiography = new Category("autobiography", "자서전");
-        Category save1 = categoryRepository.save(category_Autobiography);
+        Category category_Autobiography = new Category("Autobiography", "자서전");
+        Category Autobiography = categoryRepository.save(category_Autobiography);
 
-        Category category_Major = new Category("major", "전공");
-        Category save2 = categoryRepository.save(category_Major);
+        Category category_Major = new Category("Major", "전공");
+        Category Major = categoryRepository.save(category_Major);
 
-        save.addCategory(save1);
-        save.addCategory(save2);
+        book.addCategory(Autobiography);
+        book.addCategory(Major);
 
         /*
            SimpleJpaRepository.save 메소드는 자체적으로 @Transactional 어노테이션을 사용하고있으나
@@ -58,6 +57,38 @@ class CategoryTest {
 
         // 내부적으로 JPQL 사용
         List<Category> categories = categoryRepository.findAll();
+
+    }
+
+    /**
+     * Book 카테고리 아래로 등록된 자식 카테고리 리스트 추출
+     */
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void SearchCategoryChildListTest() {
+
+        Category category_Book = new Category("Book", "도서");
+        Category book = categoryRepository.save(category_Book);
+
+        Category category_Autobiography = new Category("Autobiography", "자서전");
+        Category Autobiography = categoryRepository.save(category_Autobiography);
+
+        Category category_Major = new Category("Major", "전공");
+        Category Major = categoryRepository.save(category_Major);
+
+        book.addCategory(Autobiography);
+        book.addCategory(Major);
+
+        CategoryCondition condition = CategoryCondition.builder()
+                .code("Book")
+                .build();
+
+        List<CategoryListResponse> categoryList = categoryRepository.findCategoryList(condition);
+
+        for (CategoryListResponse categoryListResponse : categoryList) {
+            System.out.println("categoryListResponse = " + categoryListResponse);
+        }
 
     }
 

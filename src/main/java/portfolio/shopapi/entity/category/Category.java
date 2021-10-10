@@ -1,9 +1,8 @@
-package portfolio.shopapi.entity.Category;
+package portfolio.shopapi.entity.category;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.*;
