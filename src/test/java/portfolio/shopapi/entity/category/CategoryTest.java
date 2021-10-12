@@ -1,5 +1,6 @@
 package portfolio.shopapi.entity.category;
 
+import com.querydsl.core.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,6 +8,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.dto.condition.CategoryCondition;
 import portfolio.shopapi.repository.category.CategoryRepository;
+import portfolio.shopapi.response.category.CategoryCountListResponse;
 import portfolio.shopapi.response.category.CategoryListResponse;
 
 import java.util.List;
@@ -66,7 +68,7 @@ class CategoryTest {
     @Test
     @Transactional
     @Rollback(value = false)
-    public void SearchCategoryChildListTest() {
+    public void searchCategoryChildListTest() {
 
         Category category_Book = new Category("Book", "도서");
         Category book = categoryRepository.save(category_Book);
@@ -77,8 +79,13 @@ class CategoryTest {
         Category category_Major = new Category("Major", "전공");
         Category Major = categoryRepository.save(category_Major);
 
+        Category category_Electric = new Category("Electric", "전기과");
+        Category Electric = categoryRepository.save(category_Electric);
+
         book.addCategory(Autobiography);
         book.addCategory(Major);
+
+        Major.addCategory(Electric);
 
         CategoryCondition condition = CategoryCondition.builder()
                 .code("Book")
@@ -89,7 +96,40 @@ class CategoryTest {
         for (CategoryListResponse categoryListResponse : categoryList) {
             System.out.println("categoryListResponse = " + categoryListResponse);
         }
-
     }
+
+    /**
+     * 카테고리별 자식카테고리 보유 건수
+     */
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void findReliationCountCategoryTest() {
+
+        Category category_Book = new Category("Book", "도서");
+        Category book = categoryRepository.save(category_Book);
+
+        Category category_Autobiography = new Category("Autobiography", "자서전");
+        Category Autobiography = categoryRepository.save(category_Autobiography);
+
+        Category category_Major = new Category("Major", "전공");
+        Category Major = categoryRepository.save(category_Major);
+
+        Category category_Electric = new Category("Electric", "전기과");
+        Category Electric = categoryRepository.save(category_Electric);
+
+        book.addCategory(Autobiography);
+        book.addCategory(Major);
+
+        Major.addCategory(Electric);
+
+        List<CategoryCountListResponse> reliationCountCategory = categoryRepository.findReliationCountCategory();
+
+        for (CategoryCountListResponse categoryCountListResponse : reliationCountCategory) {
+            System.out.println("categoryCountListResponse = " + categoryCountListResponse);
+        }
+    }
+
+
 
 }

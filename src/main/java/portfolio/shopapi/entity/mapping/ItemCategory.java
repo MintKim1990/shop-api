@@ -34,9 +34,15 @@ public class ItemCategory {
     }
 
     public static ItemCategory createItemCategory(Item item, Category category) {
+
         ItemCategory itemCategory = new ItemCategory();
+
         itemCategory.setItem(item);
         itemCategory.setCategories(category);
+
+        item.addItemCategories(itemCategory);
+        category.addItemCategories(itemCategory);
+
         return itemCategory;
     }
 

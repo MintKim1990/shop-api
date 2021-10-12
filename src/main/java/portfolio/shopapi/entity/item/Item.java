@@ -26,6 +26,16 @@ public abstract class Item {
     @OneToMany(mappedBy = "item")
     private List<ItemCategory> itemCategories = new ArrayList<>();
 
+    public void addItemCategories(ItemCategory itemCategory) {
+        this.itemCategories.add(itemCategory);
+    }
+
+    /**
+     * Item 생성
+     * @param name
+     * @param price
+     * @param stockQuantity
+     */
     public Item(String name, int price, int stockQuantity) {
         this.name = name;
         this.price = price;

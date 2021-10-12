@@ -30,16 +30,16 @@ class ItemCategoryTest {
     public void itemCategoryTest() {
 
         Category category_Book = new Category("Book", "도서");
-        Category category = categoryRepository.save(category_Book);
+        Category book = categoryRepository.save(category_Book);
 
-        Category category_Autobiography = new Category("autobiography", "자서전");
-        Category save1 = categoryRepository.save(category_Autobiography);
+        Category category_Autobiography = new Category("Autobiography", "자서전");
+        Category Autobiography = categoryRepository.save(category_Autobiography);
 
-        Category category_Major = new Category("major", "전공");
-        Category save2 = categoryRepository.save(category_Major);
+        Category category_Major = new Category("Major", "전공");
+        Category Major = categoryRepository.save(category_Major);
 
-        category.addCategory(save1);
-        category.addCategory(save2);
+        book.addCategory(Autobiography);
+        book.addCategory(Major);
 
         Item autobiography = new Autobiography(
                 "김민태의 일대기",
@@ -51,8 +51,10 @@ class ItemCategoryTest {
 
         Item item = itemRepository.save(autobiography);
 
-        ItemCategory itemCategory = ItemCategory.createItemCategory(item, save1);
-        itemCategoryRepository.save(itemCategory);
+        ItemCategory itemCategory = ItemCategory.createItemCategory(item, Autobiography);
+        ItemCategory saveItemCategory = itemCategoryRepository.save(itemCategory);
+
+        System.out.println("saveItemCategory = " + saveItemCategory);
 
     }
 

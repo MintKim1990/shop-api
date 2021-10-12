@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CategoryListResponse {
+public class CategoryCountListResponse {
 
     private String code;
-    private String name;
+    private Long count;
 
     @QueryProjection
-    public CategoryListResponse(String code, String name) {
+    public CategoryCountListResponse(String code, Long count) {
         this.code = code;
-        this.name = name;
+        this.count = count;
     }
 }
