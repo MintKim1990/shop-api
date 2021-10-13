@@ -3,6 +3,7 @@ package portfolio.shopapi.entity.item;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.*;
@@ -11,8 +12,10 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "DTYPE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(of = {"id", "name", "price", "stockQuantity"})
 public abstract class Item {
 
     @Id @GeneratedValue
