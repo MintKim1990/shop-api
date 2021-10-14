@@ -15,7 +15,6 @@ import java.util.List;
 @DiscriminatorColumn(name = "DTYPE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "name", "price", "stockQuantity"})
 public abstract class Item {
 
     @Id @GeneratedValue
@@ -60,7 +59,7 @@ public abstract class Item {
     public void removeStock(int quantity) {
         int restStock = this.stockQuantity - quantity;
         if (restStock < 0) {
-            throw new IllegalStateException("재고는 음수가 될 수 없습니다.");
+            throw new IllegalStateException("재고 수량이 부족합니다.");
         }
 
         this.stockQuantity = restStock;

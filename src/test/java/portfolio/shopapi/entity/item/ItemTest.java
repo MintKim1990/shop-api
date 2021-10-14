@@ -6,19 +6,42 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.entity.item.book.Autobiography;
-import portfolio.shopapi.entity.item.book.QAutobiography;
 import portfolio.shopapi.repository.item.ItemRepository;
+import portfolio.shopapi.response.item.book.BookResponse;
 
+import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ItemTest {
 
     @Autowired
     ItemRepository itemRepository;
+
+    @Test
+    @Rollback(value = false)
+    public void perpetuity() {
+
+        Item item = Autobiography.builder()
+                .name("김민태는 왜 공부를 안하는가")
+                .stockQuantity(100)
+                .price(10000)
+                .auther("김민태")
+                .isbn("12-TB2")
+                .build();
+
+        Item saveItem1 = itemRepository.save(item);
+
+        Item saveItem2 = itemRepository.findAll().get(0);
+
+        saveItem1.removeStock(20);
+
+        Item saveItem3 = itemRepository.findAll().get(0);
+
+        System.out.println("saveItem2 = " + saveItem2.getStockQuantity());
+        System.out.println("saveItem3 = " + saveItem3.getStockQuantity());
+
+    }
 
     @Test
     @Transactional
@@ -35,13 +58,10 @@ class ItemTest {
 
         Item saveItem = itemRepository.save(item);
 
-        saveItem.addStock(10);
-        saveItem.removeStock(20);
+        List<BookResponse> bookResponseList = itemRepository.findAutobiography();
 
-        List<Item> autobiographyList = itemRepository.findAutobiography();
-
-        for (Item autobiography : autobiographyList) {
-            System.out.println("autobiography = " + autobiography);
+        for (BookResponse bookResponse : bookResponseList) {
+            System.out.println("bookResponse = " + bookResponse);
         }
 
     }

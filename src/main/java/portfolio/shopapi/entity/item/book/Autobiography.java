@@ -1,7 +1,6 @@
 package portfolio.shopapi.entity.item.book;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import portfolio.shopapi.entity.item.Item;
 
 import javax.persistence.DiscriminatorValue;
@@ -9,7 +8,8 @@ import javax.persistence.Entity;
 
 @Entity
 @Getter
-@DiscriminatorValue("A")
+@DiscriminatorValue("Autobiography")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Autobiography extends Item {
 
     private String auther;
@@ -29,4 +29,5 @@ public class Autobiography extends Item {
     private void setIsbn(String isbn) {
         this.isbn = isbn;
     }
+
 }
