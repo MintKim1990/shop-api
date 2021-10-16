@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import portfolio.shopapi.exception.ParameterException;
 import portfolio.shopapi.request.member.MemberSaveRequest;
-import portfolio.shopapi.service.MemberService;
+import portfolio.shopapi.service.member.MemberService;
 
 @RestController
 @RequiredArgsConstructor

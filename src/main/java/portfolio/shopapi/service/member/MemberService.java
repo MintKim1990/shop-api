@@ -1,7 +1,8 @@
-package portfolio.shopapi.service;
+package portfolio.shopapi.service.member;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.entity.member.Member;
 import portfolio.shopapi.repository.member.MemberRepository;
@@ -11,6 +12,7 @@ import portfolio.shopapi.response.member.MemberResponse;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 

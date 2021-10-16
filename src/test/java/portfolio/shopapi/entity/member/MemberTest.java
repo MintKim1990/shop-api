@@ -5,12 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import portfolio.shopapi.entity.embedded.Address;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.request.member.MemberSaveRequest;
-import portfolio.shopapi.response.Response;
-import portfolio.shopapi.response.member.MemberResponse;
-import portfolio.shopapi.service.MemberService;
 
 import javax.persistence.EntityManager;
 
