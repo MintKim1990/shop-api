@@ -12,6 +12,8 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositor
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select i from Item i where i.id = :id")
-    Item findWithQauntityForUpdate(@Param("id") Long id);
+    Item findWithItemForUpdate(@Param("id") Long id);
+
+
 
 }

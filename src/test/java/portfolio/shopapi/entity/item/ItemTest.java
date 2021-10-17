@@ -28,7 +28,7 @@ class ItemTest {
 
     @Test
     @Rollback(value = false)
-    public void perpetuity() throws InterruptedException {
+    public void discountQuantityTest() throws InterruptedException {
 
         Item item = Autobiography.builder()
                 .name("김민태는 왜 공부를 안하는가")

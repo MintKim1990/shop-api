@@ -1,9 +1,8 @@
 package portfolio.shopapi.entity.embedded;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import portfolio.shopapi.entity.constant.DeliveryStatus;
+import portfolio.shopapi.entity.member.Member;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -12,7 +11,7 @@ import javax.persistence.Enumerated;
 
 @Embeddable
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Delivery {
 
     @Embedded
@@ -25,5 +24,26 @@ public class Delivery {
      */
     @Enumerated(EnumType.STRING)
     private DeliveryStatus deliveryStatus;
+
+    @Builder
+    public Delivery(Address deliveryAddress, DeliveryStatus deliveryStatus) {
+        this.deliveryAddress = deliveryAddress;
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    private void setDeliveryAddress(Address deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    private void setDeliveryStatus(DeliveryStatus deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
+
+    public static Delivery createDelivery(Member member) {
+        return Delivery.builder()
+                .deliveryAddress(member.getAddress())
+                .deliveryStatus(DeliveryStatus.COMP)
+                .build();
+    }
 
 }

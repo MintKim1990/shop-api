@@ -30,6 +30,10 @@ public class OrderItem {
     private int itemCount;
     private int totalPrice;
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     @Builder
     private OrderItem(Long id, Item item, Order order, int orderPrice, int itemCount, int totalPrice) {
         this.id = id;
@@ -43,17 +47,16 @@ public class OrderItem {
     /**
      * 주문 상세내역 생성
      * @param item
-     * @param orderPrice
      * @param itemCount
      * @return
      */
-    public static OrderItem createOrderItem(Item item, int orderPrice, int itemCount) {
+    public static OrderItem createOrderItem(Item item, int itemCount) {
 
         OrderItem orderItem = OrderItem.builder()
                 .item(item)
-                .orderPrice(orderPrice)
+                .orderPrice(item.getPrice())
                 .itemCount(itemCount)
-                .totalPrice(orderPrice * itemCount)
+                .totalPrice(item.getPrice() * itemCount)
                 .build();
 
         item.removeStock(itemCount); // 변경감지로 인한 DB 처리

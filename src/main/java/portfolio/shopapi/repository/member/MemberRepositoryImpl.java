@@ -4,7 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import portfolio.shopapi.entity.member.Member;
-import portfolio.shopapi.entity.member.QMember;
+
+import static portfolio.shopapi.entity.member.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +16,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     @Override
     public Member findMemberById(Long id) {
         return queryFactory
-                .selectFrom(QMember.member)
-                .where(QMember.member.id.eq(id))
+                .selectFrom(member)
+                .where(member.id.eq(id))
                 .fetchOne();
     }
 }

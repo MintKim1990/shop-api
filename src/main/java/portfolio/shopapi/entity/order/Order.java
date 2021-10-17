@@ -1,9 +1,11 @@
 package portfolio.shopapi.entity.order;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import portfolio.shopapi.entity.constant.OrderStatus;
+import portfolio.shopapi.entity.embedded.Address;
 import portfolio.shopapi.entity.embedded.Delivery;
 import portfolio.shopapi.entity.mapping.OrderItem;
 import portfolio.shopapi.entity.member.Member;
@@ -11,6 +13,7 @@ import portfolio.shopapi.entity.member.Member;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -27,7 +30,7 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Embedded
@@ -42,5 +45,46 @@ public class Order {
      */
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    // 양방향 주입
+    private void setMember(Member member) {
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    // 양방향주입
+    private void setOrderItems(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    private void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+    }
+
+    private void setOrderDateTime(LocalDateTime orderDateTime) {
+        this.orderDateTime = orderDateTime;
+    }
+
+    private void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+
+        Order order = new Order();
+
+        order.setMember(member);
+        order.setDelivery(delivery);
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDateTime(LocalDateTime.now());
+
+        for (OrderItem orderItem : orderItems) {
+            order.setOrderItems(orderItem);
+        }
+
+        return order;
+
+    }
 
 }
