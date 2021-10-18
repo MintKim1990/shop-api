@@ -14,6 +14,7 @@ import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.response.category.CategoryListResponse;
+import portfolio.shopapi.response.order.OrderResponse;
 import portfolio.shopapi.service.order.OrderService;
 
 import java.util.ArrayList;
@@ -136,6 +137,44 @@ class OrderTest {
         }
 
         latch.await();
+
+    }
+
+    @Test
+    @Rollback(value = false)
+    public void fetchJoinTest() throws InterruptedException {
+
+        Member member = Member.CreateMember(
+                new MemberSaveRequest(
+                        "테스트",
+                        "서울",
+                        "강서구",
+                        "123",
+                        "01071656293"
+                )
+        );
+
+        // Spring Jpa Data 기본 메서드 (SimpleJpaRepository.save)
+        Member saveMember = memberRepository.save(member);
+
+        Item item = Autobiography.builder()
+                .name("김민태는 왜 공부를 안하는가")
+                .stockQuantity(100)
+                .price(10000)
+                .auther("김민태")
+                .isbn("12-TB2")
+                .build();
+
+        Item saveItem = itemRepository.save(item);
+
+        Order order = orderService.order(
+                saveMember.getId(),
+                saveItem.getId(),
+                10
+        );
+
+        List<OrderResponse> orders = orderService.findOrders(saveMember.getId());
+        orders.stream().forEach(System.out::println);
 
     }
 

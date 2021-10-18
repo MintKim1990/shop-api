@@ -11,6 +11,9 @@ import portfolio.shopapi.entity.order.Order;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.repository.order.OrderRepository;
+import portfolio.shopapi.response.order.OrderResponse;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,12 @@ public class OrderService {
 
         return orderRepository.save(order);
 
+    }
+
+    @Transactional
+    public List<OrderResponse> findOrders(Long memberId) {
+        List<OrderResponse> orders = orderRepository.findOrders(memberId);
+        return orders;
     }
 
 }
