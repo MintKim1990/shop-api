@@ -20,14 +20,14 @@ public class Category {
 
     private String name;
 
-    @OneToMany(mappedBy = "categories")
+    @OneToMany(mappedBy = "category")
     private List<ItemCategory> itemCategories = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_parent_id")
     private Category category_parent;
 
-    @OneToMany(mappedBy = "category_parent")
+    @OneToMany(mappedBy = "category_parent", cascade = CascadeType.ALL)
     private List<Category> category_child = new ArrayList<>();
 
     public Category(String code, String name) {
@@ -35,7 +35,7 @@ public class Category {
         this.name = name;
     }
 
-    public void addCategory(Category category) {
+    public void addChildCategory(Category category) {
         this.category_child.add(category);
         category.setCategory_parent(this);
     }

@@ -23,25 +23,23 @@ public class ItemCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category categories;
+    private Category category;
 
-    private void setItem(Item item) {
+    public void setItem(Item item) {
         this.item = item;
     }
 
-    private void setCategories(Category categories) {
-        this.categories = categories;
-    }
-
-    public static ItemCategory createItemCategory(Item item, Category category) {
+    /*
+        @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+        setItem 세터로 CascadeType.ALL 옵션을통해 Item 생성시 연관관계로 인해 같이 처리가 되나
+        Category 의 경우 조회하여 createItemCategory 메소드에 넣어줘야하므로 Item 을 생성하여 처리하는동안
+        Category 가 변경될경우 데이터 정합성에 문제가 생길수있어 비관적 Lock 처리가 필요
+     */
+    public static ItemCategory createItemCategory(Category category) {
 
         ItemCategory itemCategory = new ItemCategory();
 
-        itemCategory.setItem(item);
-        itemCategory.setCategories(category);
-
-        item.addItemCategories(itemCategory);
-        category.addItemCategories(itemCategory);
+        itemCategory.category = category;
 
         return itemCategory;
     }

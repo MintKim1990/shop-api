@@ -2,6 +2,7 @@ package portfolio.shopapi.entity.item.book;
 
 import lombok.*;
 import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -16,8 +17,8 @@ public class Autobiography extends Item {
     private String isbn;
 
     @Builder
-    public Autobiography(String name, int price, int stockQuantity, String auther, String isbn) {
-        super(name, price, stockQuantity);
+    public Autobiography(String name, int price, int stockQuantity, ItemCategory itemCategory, String auther, String isbn) {
+        super(name, price, stockQuantity, itemCategory);
         setAuther(auther);
         setIsbn(isbn);
     }

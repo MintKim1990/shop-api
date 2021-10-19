@@ -1,9 +1,6 @@
 package portfolio.shopapi.entity.embedded;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
@@ -17,4 +14,12 @@ public class Address {
     private String street;
     private String zipcode;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", zipcode='" + zipcode + '\'' +
+                '}';
+    }
 }

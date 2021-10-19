@@ -1,6 +1,5 @@
 package portfolio.shopapi.entity.category;
 
-import com.querydsl.core.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,8 +35,8 @@ class CategoryTest {
         Category category_Major = new Category("Major", "전공");
         Category Major = categoryRepository.save(category_Major);
 
-        book.addCategory(Autobiography);
-        book.addCategory(Major);
+        book.addChildCategory(Autobiography);
+        book.addChildCategory(Major);
 
         /*
            SimpleJpaRepository.save 메소드는 자체적으로 @Transactional 어노테이션을 사용하고있으나
@@ -70,22 +69,25 @@ class CategoryTest {
     @Rollback(value = false)
     public void searchCategoryChildListTest() {
 
-        Category category_Book = new Category("Book", "도서");
-        Category book = categoryRepository.save(category_Book);
+        Category Book = new Category("Book", "도서");
 
-        Category category_Autobiography = new Category("Autobiography", "자서전");
-        Category Autobiography = categoryRepository.save(category_Autobiography);
+        Category Autobiography = new Category("Autobiography", "자서전");
 
-        Category category_Major = new Category("Major", "전공");
-        Category Major = categoryRepository.save(category_Major);
+        Category Major = new Category("Major", "전공");
 
-        Category category_Electric = new Category("Electric", "전기과");
-        Category Electric = categoryRepository.save(category_Electric);
+        Category Electric = new Category("Electric", "전기과");
 
-        book.addCategory(Autobiography);
-        book.addCategory(Major);
+        Book.addChildCategory(Autobiography);
+        Book.addChildCategory(Major);
 
-        Major.addCategory(Electric);
+        Major.addChildCategory(Electric);
+
+        /*
+            자식 카테고리들을 저장하는 로직이 존재하지 않는이유
+            @OneToMany(mappedBy = "category_parent", cascade = CascadeType.ALL)
+            CascadeType.ALL 옵션으로 Book 최상위 엔티티 아래로 자식 카테고리들은 자동추가되게 설정
+         */
+        categoryRepository.save(Book);
 
         CategoryCondition condition = CategoryCondition.builder()
                 .code("Book")
@@ -118,10 +120,10 @@ class CategoryTest {
         Category category_Electric = new Category("Electric", "전기과");
         Category Electric = categoryRepository.save(category_Electric);
 
-        book.addCategory(Autobiography);
-        book.addCategory(Major);
+        book.addChildCategory(Autobiography);
+        book.addChildCategory(Major);
 
-        Major.addCategory(Electric);
+        Major.addChildCategory(Electric);
 
         List<CategoryCountListResponse> reliationCountCategory = categoryRepository.findReliationCountCategory();
 

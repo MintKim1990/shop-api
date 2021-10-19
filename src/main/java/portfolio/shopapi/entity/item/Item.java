@@ -25,23 +25,26 @@ public abstract class Item {
     private int price;
     private int stockQuantity;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemCategory> itemCategories = new ArrayList<>();
 
-    public void addItemCategories(ItemCategory itemCategory) {
-        this.itemCategories.add(itemCategory);
-    }
-
     /**
-     * Item 생성
+     * Item 생성 (상속관계에서만 호출가능)
      * @param name
      * @param price
      * @param stockQuantity
      */
-    public Item(String name, int price, int stockQuantity) {
+    protected Item(String name, int price, int stockQuantity, ItemCategory itemCategory) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        addItemCategories(itemCategory);
+    }
+
+    // 양방향주입
+    private void addItemCategories(ItemCategory itemCategory) {
+        this.itemCategories.add(itemCategory);
+        itemCategory.setItem(this);
     }
 
     /**

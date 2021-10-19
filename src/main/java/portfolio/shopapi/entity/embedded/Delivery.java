@@ -46,4 +46,11 @@ public class Delivery {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "deliveryAddress=" + deliveryAddress +
+                ", deliveryStatus=" + deliveryStatus +
+                '}';
+    }
 }

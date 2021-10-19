@@ -16,7 +16,7 @@ public class OrderResponse {
     private Address memberaddress;
     private String memberphone;
 
-    private List<Item> items;
+    private List<OrderItemResponse> items;
 
     private int orderPrice;
     private int itemCount;
@@ -27,7 +27,7 @@ public class OrderResponse {
     private LocalDateTime orderDateTime;
     private OrderStatus status;
 
-    public OrderResponse(String membername, Address memberaddress, String memberphone, List<Item> items, int orderPrice, int itemCount, int totalPrice, Delivery delivery, LocalDateTime orderDateTime, OrderStatus status) {
+    public OrderResponse(String membername, Address memberaddress, String memberphone, List<OrderItemResponse> items, int orderPrice, int itemCount, int totalPrice, Delivery delivery, LocalDateTime orderDateTime, OrderStatus status) {
         this.membername = membername;
         this.memberaddress = memberaddress;
         this.memberphone = memberphone;
@@ -38,5 +38,21 @@ public class OrderResponse {
         this.delivery = delivery;
         this.orderDateTime = orderDateTime;
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "membername='" + membername + '\'' +
+                ", memberaddress=" + memberaddress +
+                ", memberphone='" + memberphone + '\'' +
+                ", items=" + items +
+                ", orderPrice=" + orderPrice +
+                ", itemCount=" + itemCount +
+                ", totalPrice=" + totalPrice +
+                ", delivery=" + delivery +
+                ", orderDateTime=" + orderDateTime +
+                ", status=" + status +
+                '}';
     }
 }
