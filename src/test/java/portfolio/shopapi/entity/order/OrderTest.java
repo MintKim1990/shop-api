@@ -13,11 +13,13 @@ import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
+import portfolio.shopapi.request.order.Items;
 import portfolio.shopapi.response.order.OrderResponse;
 import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -74,10 +76,18 @@ class OrderTest {
 
         Item saveItem = itemRepository.save(item);
 
+        List<Items> items = new ArrayList<>();
+
+        items.add(
+                Items.builder()
+                        .itemId(saveItem.getId())
+                        .itemCount(10)
+                        .build()
+        );
+
         Order order = orderService.order(
                 saveMember.getId(),
-                saveItem.getId(),
-                10
+                items
         );
 
         System.out.println("order = " + order);
@@ -128,10 +138,18 @@ class OrderTest {
 
                     System.out.println("i = " + discount + " / discount = " + discount);
 
+                    List<Items> items = new ArrayList<>();
+
+                    items.add(
+                            Items.builder()
+                                    .itemId(saveItem.getId())
+                                    .itemCount(discount)
+                                    .build()
+                    );
+
                     Order order = orderService.order(
                             saveMember.getId(),
-                            saveItem.getId(),
-                            discount
+                            items
                     );
                     latch.countDown();
 
@@ -169,7 +187,7 @@ class OrderTest {
             @OneToMany(mappedBy = "category_parent", cascade = CascadeType.ALL)
             CascadeType.ALL 옵션으로 Book 최상위 엔티티 아래로 자식 카테고리들은 자동추가되게 설정
          */
-        Category saveCategory = categoryRepository.save(book);
+        categoryRepository.save(book);
 
         MemberSaveRequest memberSaveRequest = MemberSaveRequest.builder()
                 .name("테스트")
@@ -192,10 +210,36 @@ class OrderTest {
 
         Long itemId = itemService.saveAutobiography(request);
 
+        SaveAutobiographyRequest request2 = SaveAutobiographyRequest.builder()
+                .name("이제라도 공부하자..")
+                .stockQuantity(10)
+                .price(50000)
+                .categoryCode("Book")
+                .auther("김민태")
+                .isbn("12-TB3")
+                .build();
+
+        Long itemId2 = itemService.saveAutobiography(request2);
+
+        List<Items> items = new ArrayList<>();
+
+        items.add(
+                Items.builder()
+                    .itemId(itemId)
+                    .itemCount(10)
+                    .build()
+        );
+
+        items.add(
+                Items.builder()
+                        .itemId(itemId2)
+                        .itemCount(2)
+                        .build()
+        );
+
         orderService.order(
                 memberid,
-                itemId,
-                10
+                items
         );
 
         List<OrderResponse> orders = orderService.findOrders(memberid);

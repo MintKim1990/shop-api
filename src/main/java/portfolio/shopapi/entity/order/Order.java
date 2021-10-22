@@ -70,7 +70,7 @@ public class Order {
         this.status = status;
     }
 
-    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+    public static Order createOrder(Member member, Delivery delivery, List<OrderItem> orderItems) {
 
         Order order = new Order();
 

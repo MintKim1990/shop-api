@@ -6,5 +6,5 @@ import portfolio.shopapi.response.order.OrderResponse;
 import java.util.List;
 
 public interface OrderRepositoryCustom {
-    List<OrderResponse> findOrders(Long memberId);
+    List<Order> findOrders(Long memberId);
 }

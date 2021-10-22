@@ -1,6 +1,10 @@
 package portfolio.shopapi.response.order;
 
 import lombok.Data;
+import portfolio.shopapi.entity.mapping.OrderItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class OrderItemResponse {
@@ -8,13 +12,27 @@ public class OrderItemResponse {
     private String name;
     private int price;
     private int stockQuantity;
-    private String categoryCode;
+    private List<String> categoryCode = new ArrayList<>();
+    private int totalPrice;
+    private int itemCount;
 
-    public OrderItemResponse(String name, int price, int stockQuantity, String categoryCode) {
-        this.name = name;
-        this.price = price;
-        this.stockQuantity = stockQuantity;
-        this.categoryCode = categoryCode;
+
+    public OrderItemResponse(OrderItem orderItem) {
+
+        this.name = orderItem.getItem().getName();
+        this.price = orderItem.getItem().getPrice();
+        this.stockQuantity = orderItem.getItem().getStockQuantity();
+        this.totalPrice = orderItem.getTotalPrice();
+        this.itemCount = orderItem.getItemCount();
+
+        // 상품카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
+        orderItem.getItem().getItemCategories()
+                .stream()
+                .forEach(itemCategory -> {
+                    this.categoryCode.add(
+                            itemCategory.getCategory().getName()
+                    ); // 카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
+                });
     }
 
     @Override
@@ -23,7 +41,7 @@ public class OrderItemResponse {
                 "name='" + name + '\'' +
                 ", price=" + price +
                 ", stockQuantity=" + stockQuantity +
-                ", categoryCode='" + categoryCode + '\'' +
+                ", categoryCode=" + categoryCode +
                 '}';
     }
 }

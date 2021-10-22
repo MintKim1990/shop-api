@@ -5,9 +5,12 @@ import portfolio.shopapi.entity.constant.OrderStatus;
 import portfolio.shopapi.entity.embedded.Address;
 import portfolio.shopapi.entity.embedded.Delivery;
 import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.entity.mapping.OrderItem;
+import portfolio.shopapi.entity.order.Order;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class OrderResponse {
@@ -18,8 +21,6 @@ public class OrderResponse {
 
     private List<OrderItemResponse> items;
 
-    private int orderPrice;
-    private int itemCount;
     private int totalPrice;
 
     private Delivery delivery;
@@ -27,32 +28,24 @@ public class OrderResponse {
     private LocalDateTime orderDateTime;
     private OrderStatus status;
 
-    public OrderResponse(String membername, Address memberaddress, String memberphone, List<OrderItemResponse> items, int orderPrice, int itemCount, int totalPrice, Delivery delivery, LocalDateTime orderDateTime, OrderStatus status) {
-        this.membername = membername;
-        this.memberaddress = memberaddress;
-        this.memberphone = memberphone;
-        this.items = items;
-        this.orderPrice = orderPrice;
-        this.itemCount = itemCount;
-        this.totalPrice = totalPrice;
-        this.delivery = delivery;
-        this.orderDateTime = orderDateTime;
-        this.status = status;
+    public OrderResponse(Order order) {
+
+        this.membername = order.getMember().getName();
+        this.memberaddress = order.getMember().getAddress();
+        this.memberphone = order.getMember().getPhone();
+
+        this.items = order.getOrderItems().stream()
+                .map(orderItem -> new OrderItemResponse(orderItem))
+                .collect(Collectors.toList());
+
+        this.totalPrice = order.getOrderItems().stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
+
+        this.delivery = order.getDelivery();
+        this.orderDateTime = order.getOrderDateTime();
+        this.status = order.getStatus();
+
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "membername='" + membername + '\'' +
-                ", memberaddress=" + memberaddress +
-                ", memberphone='" + memberphone + '\'' +
-                ", items=" + items +
-                ", orderPrice=" + orderPrice +
-                ", itemCount=" + itemCount +
-                ", totalPrice=" + totalPrice +
-                ", delivery=" + delivery +
-                ", orderDateTime=" + orderDateTime +
-                ", status=" + status +
-                '}';
-    }
 }

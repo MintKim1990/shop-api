@@ -36,7 +36,7 @@ public class ItemService {
         Item item = Autobiography.builder()
                 .name(request.getName())
                 .stockQuantity(request.getStockQuantity())
-                .price(request.getStockQuantity())
+                .price(request.getPrice())
                 .itemCategory(ItemCategory.createItemCategory(findCategory))
                 .auther(request.getAuther())
                 .isbn(request.getIsbn())
