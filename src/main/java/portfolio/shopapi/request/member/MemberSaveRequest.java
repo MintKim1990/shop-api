@@ -1,5 +1,6 @@
 package portfolio.shopapi.request.member;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -22,6 +23,7 @@ public class MemberSaveRequest {
     @NotEmpty(message = "회원 휴대폰번호값이 불명확합니다.")
     private String phone;
 
+    @Builder
     public MemberSaveRequest(String name, String city, String street, String zipcode, String phone) {
         this.name = name;
         this.city = city;

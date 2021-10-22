@@ -9,7 +9,7 @@ import portfolio.shopapi.entity.item.book.Autobiography;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.request.item.BookSaveRequest;
+import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 
 import java.util.Objects;
 
@@ -21,12 +21,12 @@ public class ItemService {
     private final CategoryRepository categoryRepository;
 
     /**
-     * Book 저장
+     * 자서전 저장
      * @param request
      * @return
      */
     @Transactional
-    public Long saveBook (BookSaveRequest request) {
+    public Long saveAutobiography(SaveAutobiographyRequest request) {
 
         // Item 을 생성하여 처리하는동안 Category 가 변경될경우 데이터 정합성에 문제가 생길수있어 비관적 Lock 처리
         Category findCategory = categoryRepository.findWithCategoryForUpdate(

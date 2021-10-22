@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class BookSaveRequest {
+public class SaveAutobiographyRequest {
 
     private String name;
     private int price;
@@ -14,7 +14,7 @@ public class BookSaveRequest {
     private String isbn;
 
     @Builder
-    public BookSaveRequest(String name, int price, int stockQuantity, String categoryCode, String auther, String isbn) {
+    public SaveAutobiographyRequest(String name, int price, int stockQuantity, String categoryCode, String auther, String isbn) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;

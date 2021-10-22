@@ -18,7 +18,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Response save(MemberSaveRequest memberSaveRequest) {
+    public Long saveMember(MemberSaveRequest memberSaveRequest) {
+
+        Member member = memberRepository.save(
+                Member.CreateMember(memberSaveRequest)
+        );
+
+        return member.getId();
+    }
+
+    public Response saveMemberForApi(MemberSaveRequest memberSaveRequest) {
 
         Member member = memberRepository.save(
                 Member.CreateMember(memberSaveRequest)

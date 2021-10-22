@@ -4,30 +4,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
-import portfolio.shopapi.dto.condition.CategoryCondition;
 import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Autobiography;
-import portfolio.shopapi.entity.mapping.ItemCategory;
 import portfolio.shopapi.entity.member.Member;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
-import portfolio.shopapi.request.item.BookSaveRequest;
+import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
-import portfolio.shopapi.response.category.CategoryListResponse;
 import portfolio.shopapi.response.order.OrderResponse;
 import portfolio.shopapi.service.item.ItemService;
+import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class OrderTest {
@@ -37,6 +31,9 @@ class OrderTest {
 
     @Autowired
     ItemService itemService;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -174,20 +171,17 @@ class OrderTest {
          */
         Category saveCategory = categoryRepository.save(book);
 
-        Member member = Member.CreateMember(
-                new MemberSaveRequest(
-                        "테스트",
-                        "서울",
-                        "강서구",
-                        "123",
-                        "01071656293"
-                )
-        );
+        MemberSaveRequest memberSaveRequest = MemberSaveRequest.builder()
+                .name("테스트")
+                .city("서울")
+                .street("강서구")
+                .zipcode("123")
+                .phone("01071656293")
+                .build();
 
-        // Spring Jpa Data 기본 메서드 (SimpleJpaRepository.save)
-        Member saveMember = memberRepository.save(member);
+        Long memberid = memberService.saveMember(memberSaveRequest);
 
-        BookSaveRequest request = BookSaveRequest.builder()
+        SaveAutobiographyRequest request = SaveAutobiographyRequest.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)
@@ -196,13 +190,15 @@ class OrderTest {
                 .isbn("12-TB2")
                 .build();
 
-        Order order = orderService.order(
-                saveMember.getId(),
-                itemService.saveBook(request),
+        Long itemId = itemService.saveAutobiography(request);
+
+        orderService.order(
+                memberid,
+                itemId,
                 10
         );
 
-        List<OrderResponse> orders = orderService.findOrders(saveMember.getId());
+        List<OrderResponse> orders = orderService.findOrders(memberid);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
     }
