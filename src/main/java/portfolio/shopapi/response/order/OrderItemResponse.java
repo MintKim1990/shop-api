@@ -1,10 +1,12 @@
 package portfolio.shopapi.response.order;
 
 import lombok.Data;
+import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.mapping.OrderItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 public class OrderItemResponse {
@@ -25,14 +27,14 @@ public class OrderItemResponse {
         this.totalPrice = orderItem.getTotalPrice();
         this.itemCount = orderItem.getItemCount();
 
-        // 상품카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
-        orderItem.getItem().getItemCategories()
+        orderItem.getItem().getItemCategories() // 상품카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
                 .stream()
                 .forEach(itemCategory -> {
                     this.categoryCode.add(
                             itemCategory.getCategory().getName()
-                    ); // 카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
+                    );
                 });
+
     }
 
     @Override
@@ -42,6 +44,8 @@ public class OrderItemResponse {
                 ", price=" + price +
                 ", stockQuantity=" + stockQuantity +
                 ", categoryCode=" + categoryCode +
+                ", totalPrice=" + totalPrice +
+                ", itemCount=" + itemCount +
                 '}';
     }
 }

@@ -71,7 +71,7 @@ public class OrderService {
         /*
             주문조회시 조인되는 테이블은 회원, 주문리스트, 상품, 상품카테고리리스트, 카테고리등 많다.
 
-            주문테이블을 메인테이블로 Fetch Join시 1:N 관계에 있는 테이블은
+            주문테이블을 메인테이블로 Fetch Join시 ToMany 관계에 있는 테이블은
             주문리스트, 상품카테고리리스트가 존재하여 실질적으로는 1:N:M 관계가 된다.
 
             Fetch Join시 메인테이블기준 ToMany 관계에 테이블이 2개이상(1:N:M..) 존재하게될경우
@@ -86,7 +86,7 @@ public class OrderService {
             2순위 : 연관관계에 데이터를 지연로딩으로 처리후 default_batch_fetch_size를 적용하여 지연로딩되는 테이블을 IN절로 조회하여 N+1문제를 처리
 
             해결방안
-            1. 주문:회원:주문리스트:아이템 까지는 Fetch Join 으로 데이터 조회
+            1. 주문:회원:주문리스트:아이템 까지는 Fetch Join 으로 데이터 조회 (ToMany 관계는 주문리스트 한개)
             2. Fetch Join 으로 조회된 결과에 상품카테고리리스트는 default_batch_fetch_size를 적용하여 지연로딩으로 조회
          */
 

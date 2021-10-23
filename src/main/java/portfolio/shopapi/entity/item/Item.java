@@ -9,6 +9,7 @@ import portfolio.shopapi.entity.mapping.ItemCategory;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -34,11 +35,15 @@ public abstract class Item {
      * @param price
      * @param stockQuantity
      */
-    protected Item(String name, int price, int stockQuantity, ItemCategory itemCategory) {
+    protected Item(String name, int price, int stockQuantity, List<ItemCategory> itemCategories) {
+
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
-        addItemCategories(itemCategory);
+
+        itemCategories.stream()
+                .forEach(this::addItemCategories);
+
     }
 
     // 양방향주입

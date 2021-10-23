@@ -6,6 +6,7 @@ import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,8 +18,8 @@ public class Autobiography extends Item {
     private String isbn;
 
     @Builder
-    public Autobiography(String name, int price, int stockQuantity, ItemCategory itemCategory, String auther, String isbn) {
-        super(name, price, stockQuantity, itemCategory);
+    public Autobiography(String name, int price, int stockQuantity, List<ItemCategory> itemCategories, String auther, String isbn) {
+        super(name, price, stockQuantity, itemCategories);
         setAuther(auther);
         setIsbn(isbn);
     }

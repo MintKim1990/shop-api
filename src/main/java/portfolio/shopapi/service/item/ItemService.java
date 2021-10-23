@@ -11,7 +11,10 @@ import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +31,30 @@ public class ItemService {
     @Transactional
     public Long saveAutobiography(SaveAutobiographyRequest request) {
 
+        List<ItemCategory> itemCategories = new ArrayList<>();
+
         // Item 을 생성하여 처리하는동안 Category 가 변경될경우 데이터 정합성에 문제가 생길수있어 비관적 Lock 처리
-        Category findCategory = categoryRepository.findWithCategoryForUpdate(
-                request.getCategoryCode()
-        );
+        request.getCategoryCodes().stream()
+                .forEach(code -> {
+
+                    Optional<Category> category = categoryRepository.findWithCategoryForUpdate(code);
+
+                    if(category.isPresent()) {
+                        itemCategories.add(
+                                ItemCategory.createItemCategory(
+                                        category.get()
+                                )
+                        );
+                    } else {
+                        throw new RuntimeException("유효하지 않은 카테고리 코드입니다.");
+                    }
+                });
 
         Item item = Autobiography.builder()
                 .name(request.getName())
                 .stockQuantity(request.getStockQuantity())
                 .price(request.getPrice())
-                .itemCategory(ItemCategory.createItemCategory(findCategory))
+                .itemCategories(itemCategories)
                 .auther(request.getAuther())
                 .isbn(request.getIsbn())
                 .build();

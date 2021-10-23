@@ -12,6 +12,9 @@ import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.mapping.ItemCategoryRepository;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SpringBootTest
 class ItemCategoryTest {
 
@@ -41,7 +44,9 @@ class ItemCategoryTest {
         book.addChildCategory(Autobiography);
         book.addChildCategory(Major);
 
-        ItemCategory itemCategory = ItemCategory.createItemCategory(Autobiography);
+        List<ItemCategory> itemCategory = Arrays.asList(
+                ItemCategory.createItemCategory(Autobiography)
+        );
 
         Item autobiography = new Autobiography(
                 "김민태의 일대기",
@@ -53,9 +58,7 @@ class ItemCategoryTest {
         );
 
         Item item = itemRepository.save(autobiography);
-        ItemCategory saveItemCategory = itemCategoryRepository.save(itemCategory);
-
-        System.out.println("saveItemCategory = " + saveItemCategory);
+        System.out.println("item = " + item);
 
     }
 

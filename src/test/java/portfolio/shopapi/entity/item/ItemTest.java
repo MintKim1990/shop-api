@@ -15,6 +15,7 @@ import portfolio.shopapi.response.item.book.BookResponse;
 import portfolio.shopapi.service.item.ItemService;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -145,15 +146,17 @@ class ItemTest {
         Category saveCategory = categoryRepository.save(book);
 
         // Item 을 생성하여 처리하는동안 Category 가 변경될경우 데이터 정합성에 문제가 생길수있어 비관적 Lock 처리
-        Category findCategory = categoryRepository.findWithCategoryForUpdate(saveCategory.getCode());
+        Category findCategory = categoryRepository.findWithCategoryForUpdate(saveCategory.getCode()).get();
 
-        ItemCategory itemCategory = ItemCategory.createItemCategory(findCategory);
+        List<ItemCategory> itemCategory = Arrays.asList(
+                ItemCategory.createItemCategory(findCategory)
+        );
 
         Item item = Autobiography.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)
-                .itemCategory(itemCategory)
+                .itemCategories(itemCategory)
                 .auther("김민태")
                 .isbn("12-TB2")
                 .build();
