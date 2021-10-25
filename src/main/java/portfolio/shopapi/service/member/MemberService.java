@@ -45,7 +45,11 @@ public class MemberService {
         );
     }
 
-    public Response findMemberById(Long id) {
+    public Member findMemberById(Long id) {
+        return memberRepository.findMemberById(id);
+    }
+
+    public Response findResponseMemberById(Long id) {
         return new Response(
                 memberRepository.findMemberById(id)
         );

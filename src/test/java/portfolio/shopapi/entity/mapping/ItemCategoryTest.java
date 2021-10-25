@@ -1,5 +1,6 @@
 package portfolio.shopapi.entity.mapping;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import portfolio.shopapi.entity.item.book.Autobiography;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.mapping.ItemCategoryRepository;
+import portfolio.shopapi.service.item.ItemService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +24,10 @@ class ItemCategoryTest {
     CategoryRepository categoryRepository;
 
     @Autowired
-    ItemCategoryRepository itemCategoryRepository;
+    ItemRepository itemRepository;
 
     @Autowired
-    ItemRepository itemRepository;
+    ItemService itemService;
 
     @Transactional
     @Rollback(value = false)
@@ -57,8 +59,13 @@ class ItemCategoryTest {
                 "IS-19231-T"
         );
 
+        /*
+            @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+            CascadeType.ALL 옵션으로 아이템 저장시 Category도 같이 저장
+         */
+
         Item item = itemRepository.save(autobiography);
-        System.out.println("item = " + item);
+        Assertions.assertThat(item.getItemCategories().size()).isEqualTo(1);
 
     }
 

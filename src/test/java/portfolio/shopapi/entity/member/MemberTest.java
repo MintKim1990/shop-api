@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.request.member.MemberSaveRequest;
+import portfolio.shopapi.response.Response;
+import portfolio.shopapi.service.member.MemberService;
 
 import javax.persistence.EntityManager;
 
@@ -15,10 +17,7 @@ import javax.persistence.EntityManager;
 class MemberTest {
 
     @Autowired
-    EntityManager entityManager;
-
-    @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
     /**
      * 회원 등록 및 검증
@@ -26,7 +25,7 @@ class MemberTest {
     @Test
     public void createMemberTest() {
 
-        Member member = Member.CreateMember(
+        Long saveMemberId = memberService.saveMember(
                 new MemberSaveRequest(
                         "테스트",
                         "서울",
@@ -36,14 +35,11 @@ class MemberTest {
                 )
         );
 
-        // Spring Jpa Data 기본 메서드 (SimpleJpaRepository.save)
-        Member saveMember = memberRepository.save(member);
 
         // QueryDsl Custom 클래스 메서드 (MemberRepositoryImpl.findMemberById)
-        Member findMember = memberRepository.findMemberById(saveMember.getId());
+        Member findMember = memberService.findMemberById(saveMemberId);
 
-        Assertions.assertThat(saveMember.getId()).isEqualTo(findMember.getId());
-
+        Assertions.assertThat(saveMemberId).isEqualTo(findMember.getId());
 
     }
 

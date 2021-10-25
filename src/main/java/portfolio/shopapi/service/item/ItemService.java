@@ -23,6 +23,11 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional
+    public Optional<Item> findById(Long id) {
+        return itemRepository.findById(id);
+    }
+
     /**
      * 자서전 저장
      * @param request

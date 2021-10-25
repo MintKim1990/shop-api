@@ -10,7 +10,8 @@ import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.repository.member.MemberRepository;
+import portfolio.shopapi.request.category.CategoryRequest;
+import portfolio.shopapi.request.category.CategorySet;
 import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.request.order.Items;
@@ -20,6 +21,7 @@ import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -45,19 +47,10 @@ class OrderTest {
     @Autowired
     CategoryService categoryService;
 
-    @Autowired
-    CategoryRepository categoryRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    ItemRepository itemRepository;
-
     @BeforeEach
     void setCategory() {
         // 카테고리 데이터 저장
-        categoryRepository.save(
+        categoryService.saveCategory(
                 getCategory()
         );
     }
@@ -94,12 +87,13 @@ class OrderTest {
                 new Items(itemId, 10)
         );
 
-        Order order = orderService.order(
+        orderService.order(
                 memberid,
                 items
         );
 
-        System.out.println("order = " + order);
+        List<OrderResponse> orders = orderService.findOrders(memberid);
+        assertThat(orders.size()).isEqualTo(1);
 
     }
 
@@ -168,7 +162,7 @@ class OrderTest {
 
         List<OrderResponse> orders = orderService.findOrders(memberid);
 
-        Optional<Item> findItem = itemRepository.findById(itemId);
+        Optional<Item> findItem = itemService.findById(itemId);
         if(!findItem.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);
@@ -303,10 +297,10 @@ class OrderTest {
         List<OrderResponse> orders = orderService.findOrders(saveMemberId);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
-        Optional<Item> findItem1 = itemRepository.findById(itemId);
+        Optional<Item> findItem1 = itemService.findById(itemId);
         if(!findItem1.isPresent()) fail("아이템이 존재하지 않습니다.");
 
-        Optional<Item> findItem2 = itemRepository.findById(itemId2);
+        Optional<Item> findItem2 = itemService.findById(itemId2);
         if(!findItem2.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);
@@ -319,20 +313,23 @@ class OrderTest {
      * 카테고리 테스트 데이터 생성
      * @return
      */
-    private Category getCategory() {
-        // 카테고리
-        Category book = new Category("Book", "도서");
-        Category autobiography = new Category("Autobiography", "자서전");
-        Category major = new Category("Major", "전공");
-        Category electric = new Category("Electric", "전기과");
+    private CategoryRequest getCategory() {
 
-        // 도서 카테고리 아래에 자서전, 전공 추가
-        book.addChildCategory(autobiography);
-        book.addChildCategory(major);
+        CategorySet book = new CategorySet("Book", "도서");
+        CategorySet autobiography = new CategorySet("Autobiography", "자서전");
+        CategorySet major = new CategorySet("Major", "전공");
+        CategorySet electric = new CategorySet("Electric", "전기과");
 
-        // 자서전 카테고리 아래에 전기과 추가
-        major.addChildCategory(electric);
-        return book;
+        CategoryRequest categoryRequest = new CategoryRequest(
+                book,
+                Arrays.asList(
+                        autobiography,
+                        major,
+                        electric
+                )
+        );
+
+        return categoryRequest;
     }
 
 }
