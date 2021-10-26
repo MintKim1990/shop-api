@@ -6,11 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.item.Item;
-import portfolio.shopapi.repository.category.CategoryRepository;
-import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.request.category.CategoryRequest;
 import portfolio.shopapi.request.category.CategorySet;
 import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
@@ -21,7 +17,6 @@ import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,9 +44,19 @@ class OrderTest {
 
     @BeforeEach
     void setCategory() {
+
         // 카테고리 데이터 저장
         categoryService.saveCategory(
-                getCategory()
+                CategorySet.builder().code("Book").name("도서").build()
+        );
+        categoryService.saveCategory(
+                CategorySet.builder().code("Autobiography").name("자서전").parent_code("Book").build()
+        );
+        categoryService.saveCategory(
+                CategorySet.builder().code("Major").name("전공").parent_code("Book").build()
+        );
+        categoryService.saveCategory(
+                CategorySet.builder().code("Electric").name("전기과").parent_code("Major").build()
         );
     }
 
@@ -307,29 +312,6 @@ class OrderTest {
         assertThat(findItem1.get().getStockQuantity()).isEqualTo(55);
         assertThat(findItem2.get().getStockQuantity()).isEqualTo(55);
 
-    }
-
-    /**
-     * 카테고리 테스트 데이터 생성
-     * @return
-     */
-    private CategoryRequest getCategory() {
-
-        CategorySet book = new CategorySet("Book", "도서");
-        CategorySet autobiography = new CategorySet("Autobiography", "자서전");
-        CategorySet major = new CategorySet("Major", "전공");
-        CategorySet electric = new CategorySet("Electric", "전기과");
-
-        CategoryRequest categoryRequest = new CategoryRequest(
-                book,
-                Arrays.asList(
-                        autobiography,
-                        major,
-                        electric
-                )
-        );
-
-        return categoryRequest;
     }
 
 }

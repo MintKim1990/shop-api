@@ -12,6 +12,8 @@ import portfolio.shopapi.response.category.CategoryListResponse;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 class CategoryTest {
 
@@ -23,17 +25,19 @@ class CategoryTest {
      */
     @Test
     @Transactional
-    @Rollback(value = false)
     public void relationTest() {
 
-        Category category_Book = new Category("Book", "도서");
-        Category book = categoryRepository.save(category_Book);
+        Category book = categoryRepository.save(
+                new Category("Book", "도서")
+        );
 
-        Category category_Autobiography = new Category("Autobiography", "자서전");
-        Category Autobiography = categoryRepository.save(category_Autobiography);
+        Category Autobiography = categoryRepository.save(
+                new Category("Autobiography", "자서전")
+        );
 
-        Category category_Major = new Category("Major", "전공");
-        Category Major = categoryRepository.save(category_Major);
+        Category Major = categoryRepository.save(
+                new Category("Major", "전공")
+        );
 
         book.addChildCategory(Autobiography);
         book.addChildCategory(Major);
@@ -58,6 +62,7 @@ class CategoryTest {
 
         // 내부적으로 JPQL 사용
         List<Category> categories = categoryRepository.findAll();
+        assertThat(categories.size()).isEqualTo(3);
 
     }
 
@@ -66,38 +71,35 @@ class CategoryTest {
      */
     @Test
     @Transactional
-    @Rollback(value = false)
     public void searchCategoryChildListTest() {
 
-        Category Book = new Category("Book", "도서");
+        Category Book = categoryRepository.save(
+                new Category("Book", "도서")
+        );
 
-        Category Autobiography = new Category("Autobiography", "자서전");
+        Category Autobiography = categoryRepository.save(
+                new Category("Autobiography", "자서전")
+        );
 
-        Category Major = new Category("Major", "전공");
+        Category Major = categoryRepository.save(
+                new Category("Major", "전공")
+        );
 
-        Category Electric = new Category("Electric", "전기과");
+        Category Electric = categoryRepository.save(
+                new Category("Electric", "전기과")
+        );
 
         Book.addChildCategory(Autobiography);
         Book.addChildCategory(Major);
 
         Major.addChildCategory(Electric);
 
-        /*
-            자식 카테고리들을 저장하는 로직이 존재하지 않는이유
-            @OneToMany(mappedBy = "category_parent", cascade = CascadeType.ALL)
-            CascadeType.ALL 옵션으로 Book 최상위 엔티티 아래로 자식 카테고리들은 자동추가되게 설정
-         */
-        categoryRepository.save(Book);
-
         CategoryCondition condition = CategoryCondition.builder()
                 .code("Book")
                 .build();
 
         List<CategoryListResponse> categoryList = categoryRepository.findCategoryList(condition);
-
-        for (CategoryListResponse categoryListResponse : categoryList) {
-            System.out.println("categoryListResponse = " + categoryListResponse);
-        }
+        assertThat(categoryList.size()).isEqualTo(2); // Book 아래로 등록된 카테고리 : 자서전, 전공
     }
 
     /**
@@ -105,20 +107,24 @@ class CategoryTest {
      */
     @Test
     @Transactional
-    @Rollback(value = false)
     public void findReliationCountCategoryTest() {
 
-        Category category_Book = new Category("Book", "도서");
-        Category book = categoryRepository.save(category_Book);
 
-        Category category_Autobiography = new Category("Autobiography", "자서전");
-        Category Autobiography = categoryRepository.save(category_Autobiography);
+        Category book = categoryRepository.save(
+                new Category("Book", "도서")
+        );
 
-        Category category_Major = new Category("Major", "전공");
-        Category Major = categoryRepository.save(category_Major);
+        Category Autobiography = categoryRepository.save(
+                new Category("Autobiography", "자서전")
+        );
 
-        Category category_Electric = new Category("Electric", "전기과");
-        Category Electric = categoryRepository.save(category_Electric);
+        Category Major = categoryRepository.save(
+                new Category("Major", "전공")
+        );
+
+        Category Electric = categoryRepository.save(
+                new Category("Electric", "전기과")
+        );
 
         book.addChildCategory(Autobiography);
         book.addChildCategory(Major);
@@ -127,9 +133,12 @@ class CategoryTest {
 
         List<CategoryCountListResponse> reliationCountCategory = categoryRepository.findReliationCountCategory();
 
-        for (CategoryCountListResponse categoryCountListResponse : reliationCountCategory) {
-            System.out.println("categoryCountListResponse = " + categoryCountListResponse);
-        }
+        assertThat(reliationCountCategory.size()).isEqualTo(4);
+        assertThat(reliationCountCategory.get(0).getCount()).isEqualTo(2); // 도서 아래에 전공, 자서전
+        assertThat(reliationCountCategory.get(1).getCount()).isEqualTo(0); // 자서전 아래에 0
+        assertThat(reliationCountCategory.get(2).getCount()).isEqualTo(1); // 전공 아래에 전기과
+        assertThat(reliationCountCategory.get(3).getCount()).isEqualTo(0); // 전기과 아래에 0
+
     }
 
 

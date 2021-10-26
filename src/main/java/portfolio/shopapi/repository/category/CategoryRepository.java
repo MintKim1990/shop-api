@@ -9,7 +9,7 @@ import portfolio.shopapi.entity.category.Category;
 import javax.persistence.LockModeType;
 import java.util.Optional;
 
-public interface CategoryRepository extends JpaRepository<Category, Long>, CategoryRepositoryCustom {
+public interface CategoryRepository extends JpaRepository<Category, String>, CategoryRepositoryCustom {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Category c where c.code = :code")

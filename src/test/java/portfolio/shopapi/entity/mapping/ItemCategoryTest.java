@@ -1,6 +1,6 @@
 package portfolio.shopapi.entity.mapping;
 
-import org.assertj.core.api.Assertions;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,11 +11,11 @@ import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Autobiography;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.repository.mapping.ItemCategoryRepository;
-import portfolio.shopapi.service.item.ItemService;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class ItemCategoryTest {
@@ -26,22 +26,21 @@ class ItemCategoryTest {
     @Autowired
     ItemRepository itemRepository;
 
-    @Autowired
-    ItemService itemService;
-
     @Transactional
-    @Rollback(value = false)
     @Test
     public void itemCategoryTest() {
 
-        Category category_Book = new Category("Book", "도서");
-        Category book = categoryRepository.save(category_Book);
+        Category book = categoryRepository.save(
+                new Category("Book", "도서")
+        );
 
-        Category category_Autobiography = new Category("Autobiography", "자서전");
-        Category Autobiography = categoryRepository.save(category_Autobiography);
+        Category Autobiography = categoryRepository.save(
+                new Category("Autobiography", "자서전")
+        );
 
-        Category category_Major = new Category("Major", "전공");
-        Category Major = categoryRepository.save(category_Major);
+        Category Major = categoryRepository.save(
+                new Category("Major", "전공")
+        );
 
         book.addChildCategory(Autobiography);
         book.addChildCategory(Major);
@@ -65,7 +64,7 @@ class ItemCategoryTest {
          */
 
         Item item = itemRepository.save(autobiography);
-        Assertions.assertThat(item.getItemCategories().size()).isEqualTo(1);
+        assertThat(item.getItemCategories().size()).isEqualTo(1);
 
     }
 
