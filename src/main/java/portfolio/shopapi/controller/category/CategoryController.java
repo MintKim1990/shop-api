@@ -29,4 +29,13 @@ public class CategoryController {
         }
     }
 
+    @PostMapping("/update")
+    public Object update(@RequestBody @Validated CategorySet categorySet, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            throw new ParameterException(bindingResult);
+        } else {
+            return categoryService.updateCategory(categorySet);
+        }
+    }
+
 }

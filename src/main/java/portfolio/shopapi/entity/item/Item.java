@@ -3,17 +3,14 @@ package portfolio.shopapi.entity.item;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "DTYPE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Item {
@@ -41,9 +38,7 @@ public abstract class Item {
         this.price = price;
         this.stockQuantity = stockQuantity;
 
-        itemCategories.stream()
-                .forEach(this::addItemCategories);
-
+        itemCategories.stream().forEach(this::addItemCategories);
     }
 
     // 양방향주입

@@ -113,18 +113,14 @@ class ItemTest {
     }
 
     @Test
-    @Transactional
     public void insertItemTest() {
 
         Category book = categoryRepository.save(
                 new Category("Book", "도서")
         );
 
-        // Item 을 생성하여 처리하는동안 Category 가 변경될경우 데이터 정합성에 문제가 생길수있어 비관적 Lock 처리
-        Category findCategory = categoryRepository.findById(book.getCode()).get();
-
         List<ItemCategory> itemCategory = Arrays.asList(
-                ItemCategory.createItemCategory(findCategory)
+                ItemCategory.createItemCategory(book)
         );
 
         Item item = Autobiography.builder()
@@ -138,8 +134,13 @@ class ItemTest {
 
         itemRepository.save(item);
 
-        List<BookResponse> bookResponseList = itemRepository.findAutobiography();
-        assertThat(bookResponseList.size()).isEqualTo(1);
+        Optional<Item> findItem = itemRepository.findById(item.getId());
+        if (findItem.isPresent()) {
+            System.out.println("findItem = " + findItem.get());
+        } else {
+            fail("아이템이 존재해야한다.");
+        }
+
 
     }
 

@@ -1,16 +1,17 @@
 package portfolio.shopapi.entity.item.book;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.List;
 
 @Entity
 @Getter
-@DiscriminatorValue("Autobiography")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Autobiography extends Item {
 
@@ -18,7 +19,12 @@ public class Autobiography extends Item {
     private String isbn;
 
     @Builder
-    public Autobiography(String name, int price, int stockQuantity, List<ItemCategory> itemCategories, String auther, String isbn) {
+    public Autobiography(String name,
+                         int price,
+                         int stockQuantity,
+                         List<ItemCategory> itemCategories,
+                         String auther,
+                         String isbn) {
         super(name, price, stockQuantity, itemCategories);
         setAuther(auther);
         setIsbn(isbn);

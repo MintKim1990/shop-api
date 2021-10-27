@@ -22,6 +22,18 @@ public class CategoryService {
     @Transactional
     public String saveCategory(CategorySet categorySet) {
 
+        Optional<Category> findCategory = categoryRepository.findById(categorySet.getCode());
+
+        if (findCategory.isPresent()) {
+            throw new ParameterException("이미 존재하는 카테고리 입니다.");
+        } else {
+            Category category = insertCategory(categorySet);
+            return category.getCode();
+        }
+    }
+    
+    @Transactional
+    public String updateCategory(CategorySet categorySet) {
         // 동시에 카테고리를 수정할 수 있으므로 Lock 처리
         Optional<Category> findCategory = categoryRepository.findWithCategoryForUpdate(categorySet.getCode());
 
@@ -29,8 +41,7 @@ public class CategoryService {
             Category category = updateCategory(categorySet, findCategory);
             return category.getCode();
         } else {
-            Category category = insertCategory(categorySet);
-            return category.getCode();
+            throw new ParameterException("존재하지 않는 카테고리 입니다.");
         }
     }
 
