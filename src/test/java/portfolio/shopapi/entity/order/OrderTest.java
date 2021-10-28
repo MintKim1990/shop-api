@@ -1,12 +1,13 @@
 package portfolio.shopapi.entity.order;
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.request.category.CategorySet;
 import portfolio.shopapi.request.item.SaveAutobiographyRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
@@ -17,6 +18,7 @@ import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 class OrderTest {
 
@@ -42,8 +45,8 @@ class OrderTest {
     @Autowired
     CategoryService categoryService;
 
-    @BeforeEach
-    void setCategory() {
+    @BeforeAll // 한번만실행
+    public void beforeAll() {
 
         // 카테고리 데이터 저장
         categoryService.saveCategory(
@@ -59,6 +62,7 @@ class OrderTest {
                 CategorySet.builder().code("Electric").name("전기과").parent_code("Major").build()
         );
     }
+
 
     /**
      * 주문테스트
@@ -97,7 +101,7 @@ class OrderTest {
                 items
         );
 
-        List<OrderResponse> orders = orderService.findOrders(memberid);
+        List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
         assertThat(orders.size()).isEqualTo(1);
 
     }
@@ -165,7 +169,7 @@ class OrderTest {
 
         latch.await();
 
-        List<OrderResponse> orders = orderService.findOrders(memberid);
+        List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
 
         Optional<Item> findItem = itemService.findById(itemId);
         if(!findItem.isPresent()) fail("아이템이 존재하지 않습니다.");
@@ -194,7 +198,7 @@ class OrderTest {
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
                         .price(10000)
-                        .categoryCodes(Arrays.asList("Book"))
+                        .categoryCodes(Arrays.asList("Book", "Autobiography", "Major"))
                         .auther("김민태")
                         .isbn("12-TB2")
                         .build()
@@ -205,7 +209,7 @@ class OrderTest {
                         .name("이제라도 공부하자..")
                         .stockQuantity(10)
                         .price(50000)
-                        .categoryCodes(Arrays.asList("Book"))
+                        .categoryCodes(Arrays.asList("Book", "Autobiography"))
                         .auther("김민태")
                         .isbn("12-TB3")
                         .build()
@@ -219,7 +223,7 @@ class OrderTest {
         // 주문
         orderService.order(memberid, firstOrderitems);
 
-        List<OrderResponse> orders = orderService.findOrders(memberid);
+        List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
 
         assertThat(orders.size()).isEqualTo(1);
         assertThat(orders.get(0).getItems().get(0).getStockQuantity()).isEqualTo(90);
@@ -299,7 +303,7 @@ class OrderTest {
 
         latch.await();
 
-        List<OrderResponse> orders = orderService.findOrders(saveMemberId);
+        List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(saveMemberId);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
         Optional<Item> findItem1 = itemService.findById(itemId);

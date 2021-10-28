@@ -1,5 +1,6 @@
 package portfolio.shopapi.response.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.mapping.OrderItem;
@@ -18,6 +19,27 @@ public class OrderItemResponse {
     private int totalPrice;
     private int itemCount;
 
+    @JsonIgnore
+    private Long itemId;
+
+
+//    public OrderItemResponse(OrderItem orderItem) {
+//
+//        this.name = orderItem.getItem().getName();
+//        this.price = orderItem.getItem().getPrice();
+//        this.stockQuantity = orderItem.getItem().getStockQuantity();
+//        this.totalPrice = orderItem.getTotalPrice();
+//        this.itemCount = orderItem.getItemCount();
+//
+//        orderItem.getItem().getItemCategories() // 상품카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
+//                .stream()
+//                .forEach(itemCategory -> {
+//                    this.categoryCode.add(
+//                            itemCategory.getCategory().getName()
+//                    );
+//                });
+//
+//    }
 
     public OrderItemResponse(OrderItem orderItem) {
 
@@ -27,13 +49,7 @@ public class OrderItemResponse {
         this.totalPrice = orderItem.getTotalPrice();
         this.itemCount = orderItem.getItemCount();
 
-        orderItem.getItem().getItemCategories() // 상품카테고리 지연로딩 실행 (default_batch_fetch_size : 1000)
-                .stream()
-                .forEach(itemCategory -> {
-                    this.categoryCode.add(
-                            itemCategory.getCategory().getName()
-                    );
-                });
+        this.itemId = orderItem.getItem().getId(); //
 
     }
 
