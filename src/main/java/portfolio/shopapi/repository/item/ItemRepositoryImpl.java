@@ -11,7 +11,7 @@ import portfolio.shopapi.response.item.book.BookResponse;
 import java.util.List;
 
 import static portfolio.shopapi.entity.item.QItem.item;
-import static portfolio.shopapi.entity.item.book.QAutobiography.autobiography;
+import static portfolio.shopapi.entity.item.book.QBook.book;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,13 +30,13 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                                 item.name,
                                 item.price,
                                 item.stockQuantity,
-                                autobiography.auther,
-                                autobiography.isbn
+                                book.auther,
+                                book.isbn
                         )
                 )
                 .from(item)
-                .join(autobiography)
-                .on(item.id.eq(autobiography.id))
+                .join(book)
+                .on(item.id.eq(book.id))
                 .fetch();
 
     }

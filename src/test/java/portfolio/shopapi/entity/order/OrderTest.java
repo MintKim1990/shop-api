@@ -5,20 +5,17 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import portfolio.shopapi.entity.item.Item;
-import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.request.category.CategorySet;
-import portfolio.shopapi.request.item.SaveAutobiographyRequest;
+import portfolio.shopapi.request.item.book.SaveBookRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.request.order.Items;
 import portfolio.shopapi.response.order.OrderResponse;
 import portfolio.shopapi.service.category.CategoryService;
-import portfolio.shopapi.service.item.ItemService;
+import portfolio.shopapi.service.item.book.BookService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +34,7 @@ class OrderTest {
     OrderService orderService;
 
     @Autowired
-    ItemService itemService;
+    BookService bookService;
 
     @Autowired
     MemberService memberService;
@@ -81,8 +78,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
                         .price(10000)
@@ -123,8 +120,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
                         .price(10000)
@@ -171,7 +168,7 @@ class OrderTest {
 
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
 
-        Optional<Item> findItem = itemService.findById(itemId);
+        Optional<Item> findItem = bookService.findById(itemId);
         if(!findItem.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);
@@ -193,8 +190,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
                         .price(10000)
@@ -204,8 +201,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId2 = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId2 = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("이제라도 공부하자..")
                         .stockQuantity(10)
                         .price(50000)
@@ -246,8 +243,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
                         .price(10000)
@@ -257,8 +254,8 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId2 = itemService.saveAutobiography(
-                SaveAutobiographyRequest.builder()
+        Long itemId2 = bookService.saveItem(
+                SaveBookRequest.builder()
                         .name("이제라도 공부하자..")
                         .stockQuantity(100)
                         .price(50000)
@@ -306,10 +303,10 @@ class OrderTest {
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(saveMemberId);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
-        Optional<Item> findItem1 = itemService.findById(itemId);
+        Optional<Item> findItem1 = bookService.findById(itemId);
         if(!findItem1.isPresent()) fail("아이템이 존재하지 않습니다.");
 
-        Optional<Item> findItem2 = itemService.findById(itemId2);
+        Optional<Item> findItem2 = bookService.findById(itemId2);
         if(!findItem2.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);

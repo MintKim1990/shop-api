@@ -1,20 +1,15 @@
 package portfolio.shopapi.entity.item;
 
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.entity.category.Category;
-import portfolio.shopapi.entity.item.book.Autobiography;
+import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.response.item.book.BookResponse;
-import portfolio.shopapi.service.item.ItemService;
+import portfolio.shopapi.service.item.book.BookService;
 
-import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +30,7 @@ class ItemTest {
     CategoryRepository categoryRepository;
 
     @Autowired
-    ItemService itemService;
+    BookService bookService;
 
     @Test
     public void discountQuantityTest() throws InterruptedException {
@@ -51,7 +46,7 @@ class ItemTest {
                 ItemCategory.createItemCategory(findCategory)
         );
 
-        Item item = Autobiography.builder()
+        Item item = Book.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)
@@ -75,7 +70,7 @@ class ItemTest {
 
                     System.out.println("i = " + discount + " / discount = " + discount);
 
-                    Integer quantity = itemService.discountQuantity(
+                    Integer quantity = bookService.discountQuantity(
                             saveItem.getId(),
                             discount
                     );
@@ -123,7 +118,7 @@ class ItemTest {
                 ItemCategory.createItemCategory(book)
         );
 
-        Item item = Autobiography.builder()
+        Item item = Book.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)

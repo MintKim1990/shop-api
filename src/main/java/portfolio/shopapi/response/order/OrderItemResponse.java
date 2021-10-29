@@ -49,7 +49,7 @@ public class OrderItemResponse {
         this.totalPrice = orderItem.getTotalPrice();
         this.itemCount = orderItem.getItemCount();
 
-        this.itemId = orderItem.getItem().getId(); //
+        this.itemId = orderItem.getItem().getId(); // 카테고리 조회목적
 
     }
 

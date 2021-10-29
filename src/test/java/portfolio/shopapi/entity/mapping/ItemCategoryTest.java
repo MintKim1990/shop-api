@@ -4,11 +4,10 @@ package portfolio.shopapi.entity.mapping;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.item.Item;
-import portfolio.shopapi.entity.item.book.Autobiography;
+import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 
@@ -49,7 +48,7 @@ class ItemCategoryTest {
                 ItemCategory.createItemCategory(Autobiography)
         );
 
-        Item autobiography = new Autobiography(
+        Item autobiography = new Book(
                 "김민태의 일대기",
                 10000,
                 10,
