@@ -26,15 +26,7 @@ public class Book extends Item {
                 String auther,
                 String isbn) {
         super(name, price, stockQuantity, itemCategories);
-        setAuther(auther);
-        setIsbn(isbn);
-    }
-
-    private void setAuther(String auther) {
         this.auther = auther;
-    }
-
-    private void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 
