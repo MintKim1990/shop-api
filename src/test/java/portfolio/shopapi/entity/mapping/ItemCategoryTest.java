@@ -10,6 +10,7 @@ import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
+import portfolio.shopapi.repository.item.book.BookRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ class ItemCategoryTest {
     CategoryRepository categoryRepository;
 
     @Autowired
-    ItemRepository itemRepository;
+    BookRepository bookRepository;
 
     @Transactional
     @Test
@@ -48,7 +49,7 @@ class ItemCategoryTest {
                 ItemCategory.createItemCategory(Autobiography)
         );
 
-        Item autobiography = new Book(
+        Book bookItem = new Book(
                 "김민태의 일대기",
                 10000,
                 10,
@@ -62,8 +63,8 @@ class ItemCategoryTest {
             CascadeType.ALL 옵션으로 아이템 저장시 Category도 같이 저장
          */
 
-        Item item = itemRepository.save(autobiography);
-        assertThat(item.getItemCategories().size()).isEqualTo(1);
+        bookRepository.save(bookItem);
+        assertThat(bookItem.getItemCategories().size()).isEqualTo(1);
 
     }
 

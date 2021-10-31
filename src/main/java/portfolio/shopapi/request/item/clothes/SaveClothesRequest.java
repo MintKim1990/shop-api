@@ -1,5 +1,6 @@
 package portfolio.shopapi.request.item.clothes;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import portfolio.shopapi.entity.constant.ClothesSize;
@@ -14,6 +15,7 @@ public class SaveClothesRequest extends SaveItemRequest {
     private String material; // 소재
     private ClothesSize size; // 길이
 
+    @Builder
     public SaveClothesRequest(String name,
                               Integer price,
                               Integer stockQuantity,

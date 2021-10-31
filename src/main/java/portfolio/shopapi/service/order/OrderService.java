@@ -10,15 +10,14 @@ import portfolio.shopapi.entity.member.Member;
 import portfolio.shopapi.entity.order.Order;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
+import portfolio.shopapi.repository.item.book.BookRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.repository.order.OrderRepository;
 import portfolio.shopapi.request.order.Items;
-import portfolio.shopapi.response.order.OrderItemResponse;
 import portfolio.shopapi.response.order.OrderResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +28,7 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final OrderRepository orderRepository;
+    private final BookRepository bookRepository;
 
     @Transactional
     public Order order(Long memberId, List<Items> items) {
@@ -41,8 +41,22 @@ public class OrderService {
         // 주문리스트 생성
         items.stream().forEach(item -> {
 
+            /*
+                Item 엔티티는 @Inheritance(strategy = InheritanceType.JOINED) 조인전략을 사용하고있으며
+                이는 상품 엔티티를 조회하는 과정에서 Item에 상속관계에있는 모든 엔티티에 조인이 걸려서
+                상품이 늘어날수록 성능상에 이슈가 발생할 가능성이있다.
+
+                이에 상품별로 생성한 레파지토리를 사용하여 조회시 연관관계에 있는 상품만 조인하기때문에
+                성능상 유리하지만 주문하려는 상품이 어떤 상품인지 알아야하여
+                주문시 Item 엔티티에 @DiscriminatorColumn 컬럼 데이터를 추가로 받아 상품을 식별하여
+                레파지토리별로 조회할까 했는데...
+
+                디자인패턴을 공부하면 뭔가 더 좋은방법이 있을것같기도하고..
+                일단 두고 성능상에 이슈가 생기면 고치는걸로 생각하여 냅두기로했다..
+             */
+
             // Lock 상태
-            Item findItem = itemRepository.findWithItemForUpdate(item.getItemId());
+            Item findItem = itemRepository.findWithItemForUpdateById(item.getItemId());
 
             // Lock 상태에 Item에 수량 변경감지로 차감예정
             OrderItem orderItem = OrderItem.createOrderItem(findItem, item.getItemCount());

@@ -5,14 +5,22 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import portfolio.shopapi.entity.constant.ClothesSize;
 import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.entity.item.book.Book;
+import portfolio.shopapi.entity.item.clothes.Clothes;
 import portfolio.shopapi.request.category.CategorySet;
 import portfolio.shopapi.request.item.book.SaveBookRequest;
+import portfolio.shopapi.request.item.clothes.SaveClothesRequest;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.request.order.Items;
+import portfolio.shopapi.response.Response;
+import portfolio.shopapi.response.item.book.BookResponse;
+import portfolio.shopapi.response.item.clothes.ClothesResponse;
 import portfolio.shopapi.response.order.OrderResponse;
 import portfolio.shopapi.service.category.CategoryService;
 import portfolio.shopapi.service.item.book.BookService;
+import portfolio.shopapi.service.item.clothes.ClothesService;
 import portfolio.shopapi.service.member.MemberService;
 import portfolio.shopapi.service.order.OrderService;
 
@@ -37,6 +45,9 @@ class OrderTest {
     BookService bookService;
 
     @Autowired
+    ClothesService clothesService;
+
+    @Autowired
     MemberService memberService;
 
     @Autowired
@@ -58,6 +69,9 @@ class OrderTest {
         categoryService.saveCategory(
                 CategorySet.builder().code("Electric").name("전기과").parent_code("Major").build()
         );
+        categoryService.saveCategory(
+                CategorySet.builder().code("Clothes").name("의류").build()
+        );
     }
 
 
@@ -78,7 +92,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = bookService.saveItem(
+        Response response = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
@@ -89,8 +103,25 @@ class OrderTest {
                         .build()
         );
 
+        BookResponse bookResponse = (BookResponse) response.getData();
+
+        Response response2 = clothesService.saveItem(
+                SaveClothesRequest.builder()
+                        .name("청바지")
+                        .stockQuantity(10)
+                        .price(50000)
+                        .categoryCodes(Arrays.asList("Clothes"))
+                        .material("천")
+                        .size(ClothesSize.SMALL)
+                        .build()
+        );
+
+        ClothesResponse clothesResponse = (ClothesResponse) response2.getData();
+
+
         List<Items> items = Arrays.asList(
-                new Items(itemId, 10)
+                new Items(bookResponse.getId(), 10),
+                new Items(clothesResponse.getId(), 1)
         );
 
         orderService.order(
@@ -120,7 +151,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = bookService.saveItem(
+        Response response = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
@@ -130,6 +161,8 @@ class OrderTest {
                         .isbn("12-TB2")
                         .build()
         );
+
+        BookResponse data = (BookResponse) response.getData();
 
         // 멀티스레드 테스트
         ExecutorService service = Executors.newFixedThreadPool(10);
@@ -146,7 +179,7 @@ class OrderTest {
                     System.out.println("i = " + discount + " / discount = " + discount);
 
                     List<Items> items = Arrays.asList(
-                            new Items(itemId, discount)
+                            new Items(data.getId(), discount)
                     );
 
                     // 주문
@@ -168,7 +201,7 @@ class OrderTest {
 
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
 
-        Optional<Item> findItem = bookService.findById(itemId);
+        Optional<Book> findItem = bookService.findById(data.getId());
         if(!findItem.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);
@@ -190,7 +223,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = bookService.saveItem(
+        Response response = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
@@ -201,7 +234,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId2 = bookService.saveItem(
+        Response response2 = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("이제라도 공부하자..")
                         .stockQuantity(10)
@@ -212,9 +245,12 @@ class OrderTest {
                         .build()
         );
 
+        BookResponse data = (BookResponse) response.getData();
+        BookResponse data2 = (BookResponse) response2.getData();
+
         List<Items> firstOrderitems = Arrays.asList(
-                new Items(itemId, 10),
-                new Items(itemId2, 2)
+                new Items(data.getId(), 10),
+                new Items(data2.getId(), 2)
         );
 
         // 주문
@@ -243,7 +279,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId = bookService.saveItem(
+        Response response = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("김민태는 왜 공부를 안하는가")
                         .stockQuantity(100)
@@ -254,7 +290,7 @@ class OrderTest {
                         .build()
         );
 
-        Long itemId2 = bookService.saveItem(
+        Response response2 = bookService.saveItem(
                 SaveBookRequest.builder()
                         .name("이제라도 공부하자..")
                         .stockQuantity(100)
@@ -264,6 +300,9 @@ class OrderTest {
                         .isbn("12-TB3")
                         .build()
         );
+
+        BookResponse data = (BookResponse) response.getData();
+        BookResponse data2 = (BookResponse) response2.getData();
 
         // 멀티스레드 테스트
         ExecutorService service = Executors.newFixedThreadPool(10);
@@ -279,8 +318,8 @@ class OrderTest {
 
                     // 주문리스트 생성
                     List<Items> items = Arrays.asList(
-                            new Items(itemId, discount),
-                            new Items(itemId2, discount)
+                            new Items(data.getId(), discount),
+                            new Items(data2.getId(), discount)
                     );                   
 
                     // 주문
@@ -303,10 +342,10 @@ class OrderTest {
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(saveMemberId);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
-        Optional<Item> findItem1 = bookService.findById(itemId);
+        Optional<Book> findItem1 = bookService.findById(data.getId());
         if(!findItem1.isPresent()) fail("아이템이 존재하지 않습니다.");
 
-        Optional<Item> findItem2 = bookService.findById(itemId2);
+        Optional<Book> findItem2 = bookService.findById(data2.getId());
         if(!findItem2.isPresent()) fail("아이템이 존재하지 않습니다.");
 
         assertThat(orders.size()).isEqualTo(10);

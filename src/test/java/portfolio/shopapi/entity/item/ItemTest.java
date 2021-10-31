@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import portfolio.shopapi.entity.category.Category;
+import portfolio.shopapi.entity.constant.ClothesSize;
 import portfolio.shopapi.entity.item.book.Book;
+import portfolio.shopapi.entity.item.clothes.Clothes;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 import portfolio.shopapi.repository.category.CategoryRepository;
+import portfolio.shopapi.repository.item.book.BookRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
+import portfolio.shopapi.repository.item.clothes.ClothesRepository;
 import portfolio.shopapi.service.item.book.BookService;
 
 import java.util.Arrays;
@@ -24,7 +28,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ItemTest {
 
     @Autowired
-    ItemRepository itemRepository;
+    BookRepository bookRepository;
+
+    @Autowired
+    ClothesRepository clothesRepository;
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -46,7 +53,7 @@ class ItemTest {
                 ItemCategory.createItemCategory(findCategory)
         );
 
-        Item item = Book.builder()
+        Book bookItem = Book.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)
@@ -55,7 +62,7 @@ class ItemTest {
                 .isbn("12-TB2")
                 .build();
 
-        Item saveItem = itemRepository.save(item);
+        bookRepository.save(bookItem);
 
         ExecutorService service = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(10);
@@ -71,7 +78,7 @@ class ItemTest {
                     System.out.println("i = " + discount + " / discount = " + discount);
 
                     Integer quantity = bookService.discountQuantity(
-                            saveItem.getId(),
+                            bookItem.getId(),
                             discount
                     );
                     latch.countDown();
@@ -102,8 +109,13 @@ class ItemTest {
 
          */
 
-        Item result = itemRepository.findById(saveItem.getId()).orElse(null);
-        assertThat(55).isEqualTo(result.getStockQuantity());
+        Optional<Book> result = bookRepository.findById(bookItem.getId());
+        if (result.isPresent()) {
+            assertThat(55).isEqualTo(result.get().getStockQuantity());
+        } else {
+            fail("아이템이 존재해야한다.");
+        }
+
 
     }
 
@@ -118,7 +130,7 @@ class ItemTest {
                 ItemCategory.createItemCategory(book)
         );
 
-        Item item = Book.builder()
+        Book bookItem = Book.builder()
                 .name("김민태는 왜 공부를 안하는가")
                 .stockQuantity(100)
                 .price(10000)
@@ -127,15 +139,65 @@ class ItemTest {
                 .isbn("12-TB2")
                 .build();
 
-        itemRepository.save(item);
+        bookRepository.save(bookItem);
 
-        Optional<Item> findItem = itemRepository.findById(item.getId());
+        Optional<Book> findItem = bookRepository.findById(bookItem.getId());
         if (findItem.isPresent()) {
             System.out.println("findItem = " + findItem.get());
         } else {
             fail("아이템이 존재해야한다.");
         }
+    }
 
+    @Test
+    public void multiItemTest() {
+
+        Category book = categoryRepository.save(
+                new Category("Book", "도서")
+        );
+
+        List<ItemCategory> bookItemCategory = Arrays.asList(
+                ItemCategory.createItemCategory(book)
+        );
+
+        Book bookItem = Book.builder()
+                .name("김민태는 왜 공부를 안하는가")
+                .stockQuantity(100)
+                .price(10000)
+                .itemCategories(bookItemCategory)
+                .auther("김민태")
+                .isbn("12-TB2")
+                .build();
+
+        bookRepository.save(bookItem);
+
+
+
+        Category clothes = categoryRepository.save(
+                new Category("Clothes", "도서")
+        );
+
+        List<ItemCategory> clothesItemCategory = Arrays.asList(
+                ItemCategory.createItemCategory(clothes)
+        );
+
+        Clothes clothesItem = Clothes.builder()
+                .name("김민태는 왜 공부를 안하는가")
+                .stockQuantity(100)
+                .price(10000)
+                .itemCategories(clothesItemCategory)
+                .material("천")
+                .size(ClothesSize.SMALL)
+                .build();
+
+        clothesRepository.save(clothesItem);
+
+
+        Optional<Book> findBookItem = bookRepository.findById(bookItem.getId());
+        Optional<Clothes> findClothesItem = clothesRepository.findById(clothesItem.getId());
+
+        System.out.println("findBookItem.get() = " + findBookItem.get());
+        System.out.println("findClothesItem.get() = " + findClothesItem.get());
 
     }
 

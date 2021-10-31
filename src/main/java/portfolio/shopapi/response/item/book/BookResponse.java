@@ -3,6 +3,7 @@ package portfolio.shopapi.response.item.book;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import portfolio.shopapi.entity.item.book.Book;
 
 @Data
 @NoArgsConstructor
@@ -23,5 +24,16 @@ public class BookResponse {
         this.stockQuantity = stockQuantity;
         this.auther = auther;
         this.isbn = isbn;
+    }
+
+    public static BookResponse createBookResponse(Book book) {
+        return BookResponse.builder()
+                .id(book.getId())
+                .name(book.getName())
+                .price(book.getPrice())
+                .stockQuantity(book.getStockQuantity())
+                .auther(book.getAuther())
+                .isbn(book.getIsbn())
+                .build();
     }
 }

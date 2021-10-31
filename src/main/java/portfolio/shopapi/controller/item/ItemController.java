@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import portfolio.shopapi.exception.ParameterException;
 import portfolio.shopapi.request.item.book.SaveBookRequest;
 import portfolio.shopapi.request.item.clothes.SaveClothesRequest;
+import portfolio.shopapi.response.item.book.BookResponse;
 import portfolio.shopapi.service.item.ItemService;
 
 import java.util.Map;
@@ -24,7 +25,7 @@ public class ItemController {
     private final Map<String, ItemService> itemServiceMap;
 
     @PostMapping("/save/book")
-    public Object saveBook(@RequestBody @Validated SaveBookRequest request, BindingResult bindingResult) throws Exception {
+    public Object saveBook(@RequestBody @Validated SaveBookRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ParameterException(bindingResult);
         } else {
@@ -33,8 +34,8 @@ public class ItemController {
         }
     }
 
-    @PostMapping("/save/clothes/pants")
-    public Object savePants(@RequestBody @Validated SaveClothesRequest request, BindingResult bindingResult) throws Exception {
+    @PostMapping("/save/clothes")
+    public Object saveClothes(@RequestBody @Validated SaveClothesRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ParameterException(bindingResult);
         } else {

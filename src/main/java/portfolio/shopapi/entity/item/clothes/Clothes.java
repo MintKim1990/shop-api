@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import portfolio.shopapi.entity.constant.ClothesSize;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.mapping.ItemCategory;
+import portfolio.shopapi.request.item.clothes.SaveClothesRequest;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,5 +28,16 @@ public class Clothes extends Item {
         super(name, price, stockQuantity, itemCategories);
         this.material = material;
         this.size = size;
+    }
+
+    public static Clothes createClothes(SaveClothesRequest request, List<ItemCategory> itemCategories) {
+        return Clothes.builder()
+                .name(request.getName())
+                .stockQuantity(request.getStockQuantity())
+                .price(request.getPrice())
+                .itemCategories(itemCategories)
+                .material(request.getMaterial())
+                .size(request.getSize())
+                .build();
     }
 }
