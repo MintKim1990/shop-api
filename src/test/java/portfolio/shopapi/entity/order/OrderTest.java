@@ -201,11 +201,10 @@ class OrderTest {
 
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(memberid);
 
-        Optional<Book> findItem = bookService.findById(data.getId());
-        if(!findItem.isPresent()) fail("아이템이 존재하지 않습니다.");
+        Book findItem = bookService.findById(data.getId());
 
         assertThat(orders.size()).isEqualTo(10);
-        assertThat(findItem.get().getStockQuantity()).isEqualTo(55);
+        assertThat(findItem.getStockQuantity()).isEqualTo(55);
 
     }
 
@@ -342,15 +341,12 @@ class OrderTest {
         List<OrderResponse> orders = orderService.findOrdersBySpringDataJPA(saveMemberId);
         orders.stream().forEach( o -> System.out.println("Order = " + o));
 
-        Optional<Book> findItem1 = bookService.findById(data.getId());
-        if(!findItem1.isPresent()) fail("아이템이 존재하지 않습니다.");
-
-        Optional<Book> findItem2 = bookService.findById(data2.getId());
-        if(!findItem2.isPresent()) fail("아이템이 존재하지 않습니다.");
+        Book findItem1 = bookService.findById(data.getId());
+        Book findItem2 = bookService.findById(data2.getId());
 
         assertThat(orders.size()).isEqualTo(10);
-        assertThat(findItem1.get().getStockQuantity()).isEqualTo(55);
-        assertThat(findItem2.get().getStockQuantity()).isEqualTo(55);
+        assertThat(findItem1.getStockQuantity()).isEqualTo(55);
+        assertThat(findItem2.getStockQuantity()).isEqualTo(55);
 
     }
 

@@ -12,6 +12,7 @@ import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.repository.item.book.BookRepository;
 import portfolio.shopapi.repository.item.ItemRepository;
 import portfolio.shopapi.repository.item.clothes.ClothesRepository;
+import portfolio.shopapi.request.item.StockItemRequest;
 import portfolio.shopapi.service.item.book.BookService;
 
 import java.util.Arrays;
@@ -75,15 +76,14 @@ class ItemTest {
             service.execute(() -> {
                 try {
 
-                    System.out.println("i = " + discount + " / discount = " + discount);
-
-                    Integer quantity = bookService.discountQuantity(
-                            bookItem.getId(),
-                            discount
+                    bookService.discountQuantity(
+                            StockItemRequest.builder()
+                                    .id(bookItem.getId())
+                                    .stockQuantity(discount)
+                                    .build()
                     );
-                    latch.countDown();
 
-                    System.out.println("i = " + discount + " / quantity = " + quantity);
+                    latch.countDown();
 
                 } catch(Exception e) {
                     e.printStackTrace();

@@ -1,16 +1,21 @@
 package portfolio.shopapi.service.item;
 
 import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.request.item.StockItemRequest;
 import portfolio.shopapi.response.Response;
 
 import java.util.Optional;
 
 public interface ItemService<T, R> {
 
-    Optional<R> findById(Long id);
+    R findById(Long id);
 
     Response saveItem(T request);
 
-    Item findWithItemForUpdate (Long id);
+    R findWithItemForUpdate (Long id);
+
+    Response discountQuantity(StockItemRequest request);
+
+    Response addQuantity(StockItemRequest request);
 
 }

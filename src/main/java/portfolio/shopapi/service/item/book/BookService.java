@@ -7,6 +7,7 @@ import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.entity.mapping.ItemCategory;
 import portfolio.shopapi.repository.item.book.BookRepository;
+import portfolio.shopapi.request.item.StockItemRequest;
 import portfolio.shopapi.request.item.book.SaveBookRequest;
 import portfolio.shopapi.response.Response;
 import portfolio.shopapi.response.item.book.BookResponse;
@@ -26,8 +27,11 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
 
     @Transactional
     @Override
-    public Optional<Book> findById(Long id) {
-        return bookRepository.findById(id);
+    public Book findById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new IllegalStateException("도서가 조회되지 않습니다.");
+                });
     }
 
     /**
@@ -66,22 +70,36 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
     }
 
     /**
-     * 수량차감 LOCK 테스트용
-     * @param id
-     * @param quantity
+     * 수량 차감
+     * @param request
      * @return
      */
     @Transactional
-    public Integer discountQuantity(Long id, int quantity) {
+    @Override
+    public Response discountQuantity(StockItemRequest request) {
+        Book findBook = bookRepository.findWithItemForUpdateById(request.getId());
+        findBook.removeStock(request.getStockQuantity());
 
-        Book findBook = bookRepository.findWithItemForUpdateById(id);
-
-        if(Objects.nonNull(findBook)) {
-            findBook.removeStock(quantity);
-            return findBook.getStockQuantity();
-        }
-
-        return null;
+        return new Response<BookResponse>(
+                BookResponse.createBookResponse(findBook)
+        );
     }
+
+    /**
+     * 수량 증가
+     * @param request
+     * @return
+     */
+    @Transactional
+    @Override
+    public Response addQuantity(StockItemRequest request) {
+        Book findBook = bookRepository.findWithItemForUpdateById(request.getId());
+        findBook.addStock(request.getStockQuantity());
+
+        return new Response<BookResponse>(
+                BookResponse.createBookResponse(findBook)
+        );
+    }
+
 
 }
