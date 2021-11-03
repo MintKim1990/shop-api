@@ -5,12 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.response.Response;
+import portfolio.shopapi.response.member.MemberResponse;
 import portfolio.shopapi.service.member.MemberService;
-
-import javax.persistence.EntityManager;
 
 @SpringBootTest
 @Transactional
@@ -25,7 +23,7 @@ class MemberTest {
     @Test
     public void createMemberTest() {
 
-        Long saveMemberId = memberService.saveMember(
+        Response response = memberService.saveMember(
                 new MemberSaveRequest(
                         "테스트",
                         "서울",
@@ -35,11 +33,9 @@ class MemberTest {
                 )
         );
 
+        MemberResponse memberResponse = (MemberResponse) response.getData();
 
-        // QueryDsl Custom 클래스 메서드 (MemberRepositoryImpl.findMemberById)
-        Member findMember = memberService.findMemberById(saveMemberId);
-
-        Assertions.assertThat(saveMemberId).isEqualTo(findMember.getId());
+        Assertions.assertThat(memberResponse.getName()).isEqualTo("테스트");
 
     }
 

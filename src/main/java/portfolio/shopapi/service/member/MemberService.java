@@ -3,13 +3,16 @@ package portfolio.shopapi.service.member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.request.member.MemberSaveRequest;
 import portfolio.shopapi.entity.member.Member;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.response.Response;
+import portfolio.shopapi.response.category.CategoryResponse;
 import portfolio.shopapi.response.member.MemberResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -18,46 +21,47 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Long saveMember(MemberSaveRequest memberSaveRequest) {
+    /**
+     * 회원 저장
+     * @param memberSaveRequest
+     * @return
+     */
+    public Response saveMember(MemberSaveRequest memberSaveRequest) {
 
         Member member = memberRepository.save(
                 Member.CreateMember(memberSaveRequest)
         );
 
-        return member.getId();
-    }
-
-    public Response saveMemberForApi(MemberSaveRequest memberSaveRequest) {
-
-        Member member = memberRepository.save(
-                Member.CreateMember(memberSaveRequest)
-        );
-
-        return new Response(
-                MemberResponse.builder()
-                .id(member.getId())
-                .name(member.getName())
-                .city(member.getAddress().getCity())
-                .street(member.getAddress().getStreet())
-                .zipcode(member.getAddress().getZipcode())
-                .phone(member.getPhone())
-                .build()
+        return new Response<MemberResponse>(
+                ResponseType.SUCCESS,
+                MemberResponse.createMemberResponse(member)
         );
     }
 
-    public Member findMemberById(Long id) {
-        return memberRepository.findMemberById(id);
-    }
-
-    public Response findResponseMemberById(Long id) {
-        return new Response(
-                memberRepository.findMemberById(id)
+    /**
+     * 회원조회
+     * @param id
+     * @return
+     */
+    public Response findMemberById(Long id) {
+        return new Response<MemberResponse>(
+                ResponseType.SUCCESS,
+                MemberResponse.createMemberResponse(
+                        memberRepository.findMemberById(id)
+                )
         );
     }
 
+    /**
+     * 회원 전체조회
+     * @return
+     */
     public Response findMemberByAll() {
-        return new Response(
-                memberRepository.findAll()
+        return new Response<List<MemberResponse>>(
+                ResponseType.SUCCESS,
+                memberRepository.findAll().stream()
+                        .map(member -> MemberResponse.createMemberResponse(member))
+                        .collect(Collectors.toList())
         );
     }
 

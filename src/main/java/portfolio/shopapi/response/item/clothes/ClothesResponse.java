@@ -23,7 +23,7 @@ public class ClothesResponse {
     private ClothesSize size;
 
     @Builder
-    public ClothesResponse(Long id, String name, int price, int stockQuantity, String material, ClothesSize size) {
+    private ClothesResponse(Long id, String name, int price, int stockQuantity, String material, ClothesSize size) {
         this.id = id;
         this.name = name;
         this.price = price;

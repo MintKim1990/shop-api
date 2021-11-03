@@ -17,7 +17,7 @@ public class BookResponse {
     private String isbn;
 
     @Builder
-    public BookResponse(Long id, String name, int price, int stockQuantity, String auther, String isbn) {
+    private BookResponse(Long id, String name, int price, int stockQuantity, String auther, String isbn) {
         this.id = id;
         this.name = name;
         this.price = price;

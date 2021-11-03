@@ -5,10 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.exception.ParameterException;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.request.category.CategorySet;
+import portfolio.shopapi.response.Response;
+import portfolio.shopapi.response.category.CategoryResponse;
+import portfolio.shopapi.response.item.book.BookResponse;
 
 import java.util.Optional;
 
@@ -20,7 +24,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public String saveCategory(CategorySet categorySet) {
+    public Response saveCategory(CategorySet categorySet) {
 
         Optional<Category> findCategory = categoryRepository.findById(categorySet.getCode());
 
@@ -28,21 +32,26 @@ public class CategoryService {
             throw new ParameterException("이미 존재하는 카테고리 입니다.");
         } else {
             Category category = insertCategory(categorySet);
-            return category.getCode();
+            return new Response<CategoryResponse>(
+                    ResponseType.SUCCESS,
+                    CategoryResponse.createCategoryResponse(category)
+            );
         }
     }
     
     @Transactional
-    public String updateCategory(CategorySet categorySet) {
+    public Response updateCategory(CategorySet categorySet) {
         // 동시에 카테고리를 수정할 수 있으므로 Lock 처리
-        Optional<Category> findCategory = categoryRepository.findWithCategoryForUpdate(categorySet.getCode());
+        Category findCategory = categoryRepository.findWithCategoryForUpdate(categorySet.getCode())
+                .orElseThrow(() -> {
+                    throw new ParameterException("존재하지 않는 카테고리 입니다.");
+                });
 
-        if (findCategory.isPresent()) {
-            Category category = updateCategory(categorySet, findCategory);
-            return category.getCode();
-        } else {
-            throw new ParameterException("존재하지 않는 카테고리 입니다.");
-        }
+        Category category = updateCategory(categorySet, findCategory);
+        return new Response<CategoryResponse>(
+                ResponseType.SUCCESS,
+                CategoryResponse.createCategoryResponse(category)
+        );
     }
 
     /**
@@ -69,14 +78,12 @@ public class CategoryService {
     /**
      * 카테고리 업데이트
      * @param categorySet
-     * @param findCategory
+     * @param category
      * @return
      */
-    private Category updateCategory(CategorySet categorySet, Optional<Category> findCategory) {
+    private Category updateCategory(CategorySet categorySet, Category category) {
 
         // 변경감지를 이용한 이름 업데이트 처리
-        Category category = findCategory.get();
-
         category.changeName(categorySet.getName());
 
         // 부모카테고리가 존재할경우 연관관계 설정
@@ -95,13 +102,11 @@ public class CategoryService {
     private void setParentCategory (String parentCode, Category childCategory) {
 
         // 동시에 카테고리를 수정할 수 있으므로 Lock 처리
-        Optional<Category> findParentCategory = categoryRepository.findWithCategoryForUpdate(parentCode);
+        Category findParentCategory = categoryRepository.findWithCategoryForUpdate(parentCode)
+                .orElseThrow(() -> {
+                    throw new ParameterException("부모 카테고리가 존재하지 않습니다.");
+                });
 
-        if(findParentCategory.isPresent()) {
-            findParentCategory.get().addChildCategory(childCategory);
-        } else {
-            throw new ParameterException("부모 카테고리가 존재하지 않습니다.");
-        }
-
+        findParentCategory.addChildCategory(childCategory);
     }
 }

@@ -3,6 +3,7 @@ package portfolio.shopapi.service.item.book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.entity.mapping.ItemCategory;
@@ -54,6 +55,7 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
         bookRepository.save(book);
 
         return new Response<BookResponse>(
+                ResponseType.SUCCESS,
                 BookResponse.createBookResponse(book)
         );
     }
@@ -81,6 +83,7 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
         findBook.removeStock(request.getStockQuantity());
 
         return new Response<BookResponse>(
+                ResponseType.SUCCESS,
                 BookResponse.createBookResponse(findBook)
         );
     }
@@ -97,6 +100,7 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
         findBook.addStock(request.getStockQuantity());
 
         return new Response<BookResponse>(
+                ResponseType.SUCCESS,
                 BookResponse.createBookResponse(findBook)
         );
     }

@@ -30,7 +30,7 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             throw new ParameterException(bindingResult);
         } else {
-            return memberService.saveMemberForApi(memberSaveRequest);
+            return memberService.saveMember(memberSaveRequest);
         }
     }
 
