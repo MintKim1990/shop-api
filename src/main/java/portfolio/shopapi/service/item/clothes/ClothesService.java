@@ -3,20 +3,19 @@ package portfolio.shopapi.service.item.clothes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import portfolio.shopapi.entity.item.Item;
+import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.entity.item.clothes.Clothes;
 import portfolio.shopapi.entity.mapping.ItemCategory;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.repository.item.clothes.ClothesRepository;
 import portfolio.shopapi.request.item.StockItemRequest;
 import portfolio.shopapi.request.item.clothes.SaveClothesRequest;
 import portfolio.shopapi.response.Response;
-import portfolio.shopapi.response.item.book.BookResponse;
 import portfolio.shopapi.response.item.clothes.ClothesResponse;
 import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.itemcategory.ItemCategoryService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class ClothesService implements ItemService<SaveClothesRequest, Clothes> 
     public Clothes findById(Long id) {
         return clothesRepository.findById(id)
                 .orElseThrow(() -> {
-                    throw new IllegalStateException("의류가 조회되지 않습니다.");
+                    throw new BisnessParametersException("의류가 조회되지 않습니다.");
                 });
     }
 
@@ -53,6 +52,7 @@ public class ClothesService implements ItemService<SaveClothesRequest, Clothes> 
         clothesRepository.save(clothes);
 
         return new Response<ClothesResponse>(
+                ResponseType.SUCCESS,
                 ClothesResponse.createClothesResponse(clothes)
         );
     }
@@ -64,7 +64,10 @@ public class ClothesService implements ItemService<SaveClothesRequest, Clothes> 
      */
     @Override
     public Clothes findWithItemForUpdate(Long id) {
-        return clothesRepository.findWithItemForUpdateById(id);
+        return clothesRepository.findWithItemForUpdateById(id)
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("의류가 조회되지 않습니다.");
+                });
     }
 
     /**
@@ -75,10 +78,14 @@ public class ClothesService implements ItemService<SaveClothesRequest, Clothes> 
     @Transactional
     @Override
     public Response discountQuantity(StockItemRequest request) {
-        Clothes findClothes = clothesRepository.findWithItemForUpdateById(request.getId());
+        Clothes findClothes = clothesRepository.findWithItemForUpdateById(request.getId())
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("의류가 조회되지 않습니다.");
+                });
         findClothes.removeStock(request.getStockQuantity());
 
         return new Response<ClothesResponse>(
+                ResponseType.SUCCESS,
                 ClothesResponse.createClothesResponse(findClothes)
         );
     }
@@ -91,10 +98,14 @@ public class ClothesService implements ItemService<SaveClothesRequest, Clothes> 
     @Transactional
     @Override
     public Response addQuantity(StockItemRequest request) {
-        Clothes findClothes = clothesRepository.findWithItemForUpdateById(request.getId());
+        Clothes findClothes = clothesRepository.findWithItemForUpdateById(request.getId())
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("의류가 조회되지 않습니다.");
+                });
         findClothes.addStock(request.getStockQuantity());
 
         return new Response<ClothesResponse>(
+                ResponseType.SUCCESS,
                 ClothesResponse.createClothesResponse(findClothes)
         );
     }

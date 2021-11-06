@@ -3,17 +3,18 @@ package portfolio.shopapi.service.order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.entity.embedded.Delivery;
 import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.mapping.OrderItem;
 import portfolio.shopapi.entity.member.Member;
 import portfolio.shopapi.entity.order.Order;
-import portfolio.shopapi.repository.category.CategoryRepository;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.repository.item.ItemRepository;
-import portfolio.shopapi.repository.item.book.BookRepository;
 import portfolio.shopapi.repository.member.MemberRepository;
 import portfolio.shopapi.repository.order.OrderRepository;
 import portfolio.shopapi.request.order.Items;
+import portfolio.shopapi.response.Response;
 import portfolio.shopapi.response.order.OrderResponse;
 
 import java.util.ArrayList;
@@ -24,14 +25,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
+    private final ItemRepository<Item> itemRepository;
     private final OrderRepository orderRepository;
-    private final BookRepository bookRepository;
 
+    /**
+     * 주문
+     * @param memberId
+     * @param items
+     * @return
+     * @throws Throwable
+     */
     @Transactional
-    public Order order(Long memberId, List<Items> items) {
+    public Response order(Long memberId, List<Items> items) throws Throwable {
 
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -39,9 +45,9 @@ public class OrderService {
         Member member = memberRepository.findMemberById(memberId);
 
         // 주문리스트 생성
-        items.stream().forEach(item -> {
-
+        for (Items item : items) {
             /*
+
                 Item 엔티티는 @Inheritance(strategy = InheritanceType.JOINED) 조인전략을 사용하고있으며
                 이는 상품 엔티티를 조회하는 과정에서 Item에 상속관계에있는 모든 엔티티에 조인이 걸려서
                 상품이 늘어날수록 성능상에 이슈가 발생할 가능성이있다.
@@ -53,17 +59,21 @@ public class OrderService {
 
                 디자인패턴을 공부하면 뭔가 더 좋은방법이 있을것같기도하고..
                 일단 두고 성능상에 이슈가 생기면 고치는걸로 생각하여 냅두기로했다..
+
              */
 
             // Lock 상태
-            Item findItem = itemRepository.findWithItemForUpdateById(item.getItemId());
+            Item findItem = itemRepository.findWithItemForUpdateById(item.getItemId())
+                    .orElseThrow(() -> {
+                        throw new BisnessParametersException("상품이 조회되지 않습니다.");
+                    });
 
             // Lock 상태에 Item에 수량 변경감지로 차감예정
             OrderItem orderItem = OrderItem.createOrderItem(findItem, item.getItemCount());
 
             orderItems.add(orderItem);
+        }
 
-        });
 
         // 배송
         Delivery delivery = Delivery.createDelivery(member);
@@ -75,8 +85,42 @@ public class OrderService {
                 orderItems
         );
 
-        return orderRepository.save(order);
+        // 주문저장
+        orderRepository.save(order);
 
+        return new Response(
+                ResponseType.SUCCESS,
+                findOrdersByOrderId(order.getId())
+        );
+    }
+
+    /**
+     * 저장한 주문정보 간단 조회
+     * @param orderId
+     * @return
+     */
+    private List<OrderResponse> findOrdersByOrderId(Long orderId) {
+
+        List<Order> orders = orderRepository.findOrdersByOrderId(orderId);
+
+        // 주문:회원:주문리스트:아이템 관계를 FetchJoin 으로 조회
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(order -> new OrderResponse(order))
+                .collect(Collectors.toList());
+
+        // 조회된 FetchJoin 결과에 상품엔티티 PK 기준으로 ToMany(카테고리:상품카테고리) 관계에 데이터 Fetchjoin 조회하여 세팅
+        orderResponses.forEach(orderResponse -> {
+            orderResponse.getItems().forEach(orderItemResponse -> {
+                orderItemResponse.setCategoryCode(
+                        orderRepository.findOrderCategorysByItemId(orderItemResponse.getItemId())
+                                .stream()
+                                .map(category -> category.getCode())
+                                .collect(Collectors.toList())
+                );
+            });
+        });
+
+        return orderResponses;
     }
 
     /**
@@ -166,7 +210,6 @@ public class OrderService {
         });
 
         return orderResponses;
-
     }
 
 }

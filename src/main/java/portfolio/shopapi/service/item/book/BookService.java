@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import portfolio.shopapi.constant.ResponseType;
-import portfolio.shopapi.entity.item.Item;
 import portfolio.shopapi.entity.item.book.Book;
 import portfolio.shopapi.entity.mapping.ItemCategory;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.repository.item.book.BookRepository;
 import portfolio.shopapi.request.item.StockItemRequest;
 import portfolio.shopapi.request.item.book.SaveBookRequest;
@@ -16,8 +16,6 @@ import portfolio.shopapi.service.item.ItemService;
 import portfolio.shopapi.service.itemcategory.ItemCategoryService;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
     public Book findById(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> {
-                    throw new IllegalStateException("도서가 조회되지 않습니다.");
+                    throw new BisnessParametersException("도서가 조회되지 않습니다.");
                 });
     }
 
@@ -68,7 +66,10 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
      */
     @Override
     public Book findWithItemForUpdate (Long id) {
-        return bookRepository.findWithItemForUpdateById(id);
+        return bookRepository.findWithItemForUpdateById(id)
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("도서가 조회되지 않습니다.");
+                });
     }
 
     /**
@@ -79,7 +80,10 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
     @Transactional
     @Override
     public Response discountQuantity(StockItemRequest request) {
-        Book findBook = bookRepository.findWithItemForUpdateById(request.getId());
+        Book findBook = bookRepository.findWithItemForUpdateById(request.getId())
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("도서가 조회되지 않습니다.");
+                });
         findBook.removeStock(request.getStockQuantity());
 
         return new Response<BookResponse>(
@@ -96,7 +100,10 @@ public class BookService implements ItemService<SaveBookRequest, Book> {
     @Transactional
     @Override
     public Response addQuantity(StockItemRequest request) {
-        Book findBook = bookRepository.findWithItemForUpdateById(request.getId());
+        Book findBook = bookRepository.findWithItemForUpdateById(request.getId())
+                .orElseThrow(() -> {
+                    throw new BisnessParametersException("도서가 조회되지 않습니다.");
+                });
         findBook.addStock(request.getStockQuantity());
 
         return new Response<BookResponse>(

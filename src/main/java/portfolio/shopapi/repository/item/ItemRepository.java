@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import portfolio.shopapi.entity.item.Item;
 
 import javax.persistence.LockModeType;
+import java.util.Optional;
 
 /**
  * 각 상품별 레파지토리를 상속관계로 만든이유는 조회할때 Item 타입으로 조회하게되면 상속구조에 모든 상품을 조인하여
@@ -16,6 +17,6 @@ import javax.persistence.LockModeType;
 public interface ItemRepository<T extends Item> extends JpaRepository<T, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    T findWithItemForUpdateById(Long id);
+    Optional<T> findWithItemForUpdateById(Long id);
 
 }

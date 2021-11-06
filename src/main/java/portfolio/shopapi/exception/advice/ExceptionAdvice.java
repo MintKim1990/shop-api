@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import portfolio.shopapi.constant.ErrorType;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.exception.ParameterException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,16 +28,28 @@ public class ExceptionAdvice {
         return new ErrorInfo(
                 ErrorType.PARAMETER_ERROR,
                 ErrorType.PARAMETER_ERROR.getMessage(),
-                Optional.ofNullable(Error.getBindingResult()
-                        .getAllErrors()
-                        .stream()
-                        .map(error -> new ErrorDetailInfo(
-                                error.getCode(),
-                                error.getObjectName(),
-                                error.getDefaultMessage()
-                        ))
-                        .collect(Collectors.toList()))
+                Optional.ofNullable(
+                        Error.getBindingResult()
+                                .getAllErrors()
+                                .stream()
+                                .map(error -> new ErrorDetailInfo(
+                                        error.getCode(),
+                                        error.getObjectName(),
+                                        error.getDefaultMessage()
+                                ))
+                                .collect(Collectors.toList())
+                )
                         .orElseGet(null)
+        );
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ErrorInfo BisnessParametersExceptionHandler(BisnessParametersException Error) {
+        return new ErrorInfo(
+                ErrorType.PARAMETER_ERROR,
+                Error.getMessage(),
+                null
         );
     }
 

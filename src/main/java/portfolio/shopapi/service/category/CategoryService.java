@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import portfolio.shopapi.constant.ResponseType;
 import portfolio.shopapi.entity.category.Category;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.exception.ParameterException;
 import portfolio.shopapi.repository.category.CategoryRepository;
 import portfolio.shopapi.request.category.CategorySet;
@@ -29,7 +30,7 @@ public class CategoryService {
         Optional<Category> findCategory = categoryRepository.findById(categorySet.getCode());
 
         if (findCategory.isPresent()) {
-            throw new ParameterException("이미 존재하는 카테고리 입니다.");
+            throw new BisnessParametersException("이미 존재하는 카테고리 입니다.");
         } else {
             Category category = insertCategory(categorySet);
             return new Response<CategoryResponse>(
@@ -44,7 +45,7 @@ public class CategoryService {
         // 동시에 카테고리를 수정할 수 있으므로 Lock 처리
         Category findCategory = categoryRepository.findWithCategoryForUpdate(categorySet.getCode())
                 .orElseThrow(() -> {
-                    throw new ParameterException("존재하지 않는 카테고리 입니다.");
+                    throw new BisnessParametersException("존재하지 않는 카테고리 입니다.");
                 });
 
         Category category = updateCategory(categorySet, findCategory);
@@ -104,7 +105,7 @@ public class CategoryService {
         // 동시에 카테고리를 수정할 수 있으므로 Lock 처리
         Category findParentCategory = categoryRepository.findWithCategoryForUpdate(parentCode)
                 .orElseThrow(() -> {
-                    throw new ParameterException("부모 카테고리가 존재하지 않습니다.");
+                    throw new BisnessParametersException("부모 카테고리가 존재하지 않습니다.");
                 });
 
         findParentCategory.addChildCategory(childCategory);

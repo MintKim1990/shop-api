@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import portfolio.shopapi.entity.category.Category;
 import portfolio.shopapi.entity.mapping.ItemCategory;
+import portfolio.shopapi.exception.BisnessParametersException;
 import portfolio.shopapi.repository.category.CategoryRepository;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ItemCategoryService {
                                 category.get()
                         );
                     } else {
-                        throw new RuntimeException("유효하지 않은 카테고리 코드입니다.");
+                        throw new BisnessParametersException("유효하지 않은 카테고리 코드입니다.");
                     }
                 })
                 .collect(Collectors.toList());

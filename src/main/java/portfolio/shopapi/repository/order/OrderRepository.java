@@ -18,6 +18,13 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
             " where m.id = :memberId")
     List<Order> findOrdersByMemberId(@Param("memberId") Long memberId);
 
+    @Query("select distinct o from Order o" +
+            " join fetch o.member m" +
+            " join fetch o.orderItems oi" +
+            " join fetch oi.item i" +
+            " where o.id = :orderId")
+    List<Order> findOrdersByOrderId(@Param("orderId") Long orderId);
+
     @Query("select c from Category c" +
             " join fetch c.itemCategories ic" +
             " where ic.item.id = :itemId")
